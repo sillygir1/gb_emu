@@ -5,6 +5,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define SET_FLAG(flag, value) set_flag(system->registers, flag, value)
+#define GET_FLAG(flag) get_flag(system->registers, flag)
+#define GET_ALL_FLAGS() get_all_flags(system->registers)
+
+
 // 16-bit registers
 typedef enum {
     BC,
@@ -15,7 +20,7 @@ typedef enum {
 // Flags
 typedef enum {
     CARRY,
-    ADDSUB,
+    SUB, // Also known as N
     PV,
     NONE1,
     HALFCARRY,
@@ -53,3 +58,7 @@ bool get_flag(uint8_t registers[], uint8_t flag);
 // @param flag Flag name
 // @param value Flag value
 void set_flag(uint8_t registers[], uint8_t flag, bool value);
+
+// Print all flags to cli
+// @param registers Registers array
+void get_all_flags(uint8_t registers[]);

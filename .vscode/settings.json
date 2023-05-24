@@ -3,6 +3,8 @@
         "registers.h": "c",
         "stdint.h": "c",
         "string.h": "c",
-        "instructions.h": "c"
+        "instructions.h": "c",
+        "stdio.h": "c",
+        "system.h": "c"
     }
 }

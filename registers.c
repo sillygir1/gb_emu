@@ -26,10 +26,14 @@ bool get_flag(uint8_t registers[], uint8_t flag) {
     return ret;
 }
 
-void set_flag(uint8_t registers[F], uint8_t flag, bool value) {
+void set_flag(uint8_t registers[], uint8_t flag, bool value) {
     if (value) {
         registers[F] |= (1 << flag);
     } else {
         registers[F] &= ~(1 << flag);
     }
+}
+
+void get_all_flags(uint8_t registers[]) {
+    printf("Flags:\nz: %hhu\nc: %hhu\nhc: %hhu\nn: %hhu\n", get_flag(registers, ZERO), get_flag(registers, CARRY), get_flag(registers, HALFCARRY), get_flag(registers, SUB));
 }
