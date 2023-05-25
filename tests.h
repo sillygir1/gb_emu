@@ -5,32 +5,60 @@
 #include "system.h"
 #include "instructions.h"
 
-void test_all(System *system);
+bool test_all(System* system, bool print_all);
 
-void test_ADC_A_r8(System* system);
+bool test_ADC_A_r8(System* system, bool print_all);
 
-void test_ADC_A_HL(System* system);
+bool test_ADC_A_HL(System* system, bool print_all);
 
-void test_ADC_A_n8(System* system);
+bool test_ADC_A_n8(System* system, bool print_all);
 
-void test_ADD_A_r8(System* system);
+bool test_ADD_A_r8(System* system, bool print_all);
 
-void test_ADD_A_HL(System* system);
+bool test_ADD_A_HL(System* system, bool print_all);
 
-void test_ADD_A_n8(System* system);
+bool test_ADD_A_n8(System* system, bool print_all);
 
-void test_AND_A_r8(System* system);
+bool test_AND_A_r8(System* system, bool print_all);
 
-void test_AND_A_HL(System* system);
+bool test_AND_A_HL(System* system, bool print_all);
 
-void test_AND_A_n8(System* system);
+bool test_AND_A_n8(System* system, bool print_all);
 
-void test_CP_A_r8(System* system);
+bool test_CP_A_r8(System* system, bool print_all);
 
-void test_CP_A_HL(System* system);
+bool test_CP_A_HL(System* system, bool print_all);
 
-void test_CP_A_n8(System* system);
+bool test_CP_A_n8(System* system, bool print_all);
 
-void test_DEC_r8(System *system);
+bool test_DEC_r8(System* system, bool print_all);
 
-void test_DEC_HL(System *system);
+bool test_DEC_HL(System* system, bool print_all);
+
+bool test_INC_r8(System* system, bool print_all);
+
+bool test_INC_HL(System* system, bool print_all);
+
+bool test_OR_A_r8(System* system, bool print_all);
+
+bool test_OR_A_HL(System* system, bool print_all);
+
+bool test_OR_A_n8(System* system, bool print_all);
+
+bool test_SBC_A_r8(System* system, bool print_all);
+
+bool test_SBC_A_HL(System* system, bool print_all);
+
+bool test_SBC_A_n8(System* system, bool print_all);
+
+bool test_SUB_A_r8(System* system, bool print_all);
+
+bool test_SUB_A_HL(System* system, bool print_all);
+
+bool test_SUB_A_n8(System* system, bool print_all);
+
+bool test_XOR_A_r8(System* system, bool print_all);
+
+bool test_XOR_A_HL(System* system, bool print_all);
+
+bool test_XOR_A_n8(System* system, bool print_all);
