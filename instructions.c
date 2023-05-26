@@ -1,5 +1,7 @@
 #include "instructions.h"
 
+/* Flags */
+
 void static ADD_flags(System* system, uint8_t a, uint8_t b, bool carry) {
     uint16_t result = a + b;
     if (carry) result += GET_FLAG(CARRY);
@@ -67,6 +69,27 @@ void static XOR_flags(System* system, uint8_t result) {
     SET_FLAG(CARRY, false);
 }
 
+void static ADD_HL_flags(System* system, uint16_t a, uint16_t b) {
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, (a & 0xFFF) + (b & 0xFFF) > 0xFFF);
+    SET_FLAG(CARRY, (a + b) > 0xFFFF);
+}
+
+void static BIT_flags(System* system, bool value) {
+    SET_FLAG(ZERO, !value);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, true);
+}
+
+void static SWAP_flags(System* system, bool value) {
+    SET_FLAG(ZERO, !value);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(CARRY, false);
+}
+
+/* 8-bit arithmetic and logic instructions */
+
 void ADC_A_r8(System* system, uint8_t S, uint8_t r8) {
     uint16_t result = system->registers[S] + system->registers[r8] + GET_FLAG(CARRY);
 
@@ -75,7 +98,7 @@ void ADC_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void ADC_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint16_t result = system->registers[S] + system->memory[address] + GET_FLAG(CARRY);
 
     ADD_flags(system, system->registers[S], system->memory[address], 1);
@@ -97,7 +120,7 @@ void ADD_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void ADD_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint16_t result = system->registers[S] + system->memory[address];
 
     ADD_flags(system, system->registers[S], system->memory[address], 0);
@@ -119,7 +142,7 @@ void AND_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void AND_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint8_t result = system->registers[S] & system->memory[address];
 
     AND_flags(system, result);
@@ -138,7 +161,7 @@ void CP_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void CP_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     SUB_flags(system, system->registers[S], system->memory[address]);
 }
 
@@ -152,7 +175,7 @@ void DEC_r8(System* system, uint8_t r8) {
 }
 
 void DEC_HL(System* system) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     system->memory[address] -= 1;
     DEC_flags(system, system->memory[address]);
 }
@@ -163,7 +186,7 @@ void INC_r8(System* system, uint8_t r8) {
 }
 
 void INC_HL(System* system) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     system->memory[address] += 1;
     INC_flags(system, system->memory[address]);
 }
@@ -176,7 +199,7 @@ void OR_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void OR_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint8_t result = system->registers[S] | system->memory[address];
 
     OR_flags(system, result);
@@ -198,7 +221,7 @@ void SBC_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void SBC_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint8_t result = system->registers[S] - system->memory[address] - GET_FLAG(CARRY);
 
     SBC_flags(system, system->registers[S], system->memory[address]);
@@ -220,7 +243,7 @@ void SUB_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void SUB_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint8_t result = system->registers[S] - system->memory[address];
 
     SUB_flags(system, system->registers[S], system->memory[address]);
@@ -242,7 +265,7 @@ void XOR_A_r8(System* system, uint8_t S, uint8_t r8) {
 }
 
 void XOR_A_HL(System* system, uint8_t S) {
-    uint16_t address = get_GPR16bit(system->registers, HL);
+    uint16_t address = GET_16BIT_REGISTER(HL);
     uint8_t result = system->registers[S] ^ system->memory[address];
 
     XOR_flags(system, result);
@@ -254,4 +277,82 @@ void XOR_A_n8(System* system, uint8_t S, uint8_t n8) {
 
     XOR_flags(system, result);
     system->registers[S] = result;
+}
+
+/* 16-bit arithmetic instructions */
+
+void ADD_HL_r16(System* system, uint8_t r16) {
+    uint16_t result = GET_16BIT_REGISTER(HL) + GET_16BIT_REGISTER(r16);
+    ADD_HL_flags(system, GET_16BIT_REGISTER(HL), GET_16BIT_REGISTER(r16));
+    SET_16BIT_REGISTER(HL, result);
+}
+
+void DEC_r16(System* system, uint8_t r16) {
+    SET_16BIT_REGISTER(r16, GET_16BIT_REGISTER(r16) - 1);
+}
+
+void INC_r16(System* system, uint8_t r16) {
+    SET_16BIT_REGISTER(r16, GET_16BIT_REGISTER(r16) + 1);
+}
+
+/* Bit operations instructions */
+
+void BIT_u3_r8(System* system, uint8_t u3, uint8_t r8) {
+    bool result = system->registers[r8] & (1 << u3);
+    BIT_flags(system, result);
+}
+
+void BIT_u3_HL(System* system, uint8_t u3) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool result = system->memory[address] & (1 << u3);
+    BIT_flags(system, result);
+}
+
+void RES_u3_r8(System* system, uint8_t u3, uint8_t r8) {
+    uint8_t result = system->registers[r8] & ~(1 << u3);
+    system->registers[r8] = result;
+}
+
+void RES_u3_HL(System* system, uint8_t u3) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    uint8_t result = system->memory[address] & ~(1 << u3);
+    system->memory[address] = result;
+}
+
+void SET_u3_r8(System* system, uint8_t u3, uint8_t r8) {
+    uint8_t result = system->registers[r8] | (1 << u3);
+    system->registers[r8] = result;
+}
+
+void SET_u3_HL(System* system, uint8_t u3) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    uint8_t result = system->memory[address] | (1 << u3);
+    system->memory[address] = result;
+}
+
+void SWAP_r8(System* system, uint8_t r8) {
+    uint8_t temp = system->registers[r8] & 0xF;
+    uint8_t result = (temp << 4) + (system->registers[r8] >> 4);
+    SWAP_flags(system, result);
+    system->registers[r8] = result;
+}
+
+void SWAP_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    uint8_t temp = system->memory[address] & 0xF;
+    uint8_t result = (temp << 4) + (system->memory[address] >> 4);
+    SWAP_flags(system, result);
+    system->memory[address] = result;
+}
+
+/* Stack operations instructions */
+
+void ADD_HL_SP(System* system) {
+    uint16_t result = GET_16BIT_REGISTER(HL) + GET_16BIT_REGISTER(SP);
+    ADD_HL_flags(system, GET_16BIT_REGISTER(HL), GET_16BIT_REGISTER(SP));
+    SET_16BIT_REGISTER(HL, result);
+}
+
+void ADD_SP_e8(System* system, uint8_t e8) {
+    // TODO
 }
