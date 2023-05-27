@@ -141,6 +141,10 @@ bool test_SRL_r8(System* system, uint8_t test_value, bool print_all);
 
 bool test_SRL_HL(System* system, uint8_t test_value, bool print_all);
 
+/* Load instructions */
+
+
+
 /* Stack operations instructions */
 
 bool test_ADD_HL_SP(System* system, uint16_t test_value, bool print_all);
