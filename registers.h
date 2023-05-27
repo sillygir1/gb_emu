@@ -23,14 +23,14 @@ typedef enum {
 
 // Flags
 typedef enum {
-    CARRY,
-    SUB, // Also known as N
-    PV,
     NONE1,
-    HALFCARRY,
     NONE2,
+    NONE3,
+    NONE4,
+    CARRY,
+    HALFCARRY,
+    SUB, // Also known as N
     ZERO,
-    SIGN,
 }Flags;
 
 // Registers

@@ -280,7 +280,92 @@ void SRL_HL(System* system);
 
 /* Load instructions */
 
+/// @brief Load (copy) value in r8_2 into r8_1.
+/// @param system 
+/// @param r8_1 
+/// @param r8_2 
+void LD_r8_r8(System* system, uint8_t r8_1, uint8_t r8_2);
 
+/// @brief Load value n8 into register r8.
+/// @param system 
+/// @param r8 
+/// @param n8 
+void LD_r8_n8(System* system, uint8_t r8, uint8_t n8);
+
+/// @brief Load value n16 into register r16.
+/// @param system 
+/// @param r16 
+/// @param n16 
+void LD_r16_n16(System* system, uint8_t r16, uint16_t n16);
+
+/// @brief Store value in register r8 into the byte pointed to by register HL.
+/// @param system 
+/// @param r8 
+void LD_HL_r8(System* system, uint8_t r8);
+
+/// @brief Store value n8 into the byte pointed to by register HL.
+/// @param system 
+/// @param n8 
+void LD_HL_n8(System* system, uint8_t n8);
+
+/// @brief Load value into register r8 from the byte pointed to by register HL.
+/// @param system 
+/// @param r8 
+void LD_r8_HL(System* system, uint8_t r8);
+
+/// @brief Store value in register A into the byte pointed to by register r16.
+/// @param system 
+/// @param r16 
+void LD_r16_A(System* system, uint8_t r16);
+
+/// @brief Store value in register A into the byte at address n16.
+/// @param system 
+/// @param n16 
+void LD_n16_A(System* system, uint16_t n16);
+
+/// @brief Store value in register A into the byte at address n16, provided the address is between $FF00 and $FFFF.
+/// @param system 
+/// @param n16 
+void LDH_n16_A(System* system, uint16_t n16);
+
+/// @brief Store value in register A into the byte at address $FF00+C.
+/// @param system 
+void LDH_C_A(System* system);
+
+/// @brief Load value in register A from the byte pointed to by register r16.
+/// @param system 
+/// @param r16 
+void LD_A_r16(System* system, uint8_t r16);
+
+/// @brief Load value in register A from the byte at address n16.
+/// @param system 
+/// @param n16 
+void LD_A_n16(System* system, uint16_t n16);
+
+/// @brief Load value in register A from the byte at address n16, provided the address is between $FF00 and $FFFF.
+/// @param system 
+/// @param n16 
+void LDH_A_n16(System* system, uint16_t n16);
+
+/// @brief Load value in register A from the byte at address $FF00+c.
+/// @param system 
+void LDH_A_C(System* system);
+
+/// @brief Store value in register A into the byte pointed by HL and increment HL afterwards.
+/// @param system 
+void LD_HLI_A(System* system);
+
+/// @brief Store value in register A into the byte pointed by HL and decrement HL afterwards.
+/// @param system 
+void LD_HLD_A(System* system);
+
+/// @brief Load value into register A from the byte pointed by HL and increment HL afterwards.
+/// @param system 
+void LD_A_HLI(System* system);
+
+/// @brief Load value into register A from the byte pointed by HL and decrement HL afterwards.
+/// @param system 
+void LD_A_HLD(System* system);
 
 /* Stack operations instructions */
 

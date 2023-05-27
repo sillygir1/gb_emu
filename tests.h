@@ -19,6 +19,8 @@ bool test_bit(System* system, bool print_all);
 
 bool test_bitshift(System* system, bool print_all);
 
+bool test_load(System* system, bool print_all);
+
 /* 8-bit arithmetic and logic instructions */
 
 bool test_ADC_A_r8(System* system, uint8_t test_value, bool print_all);
@@ -143,6 +145,21 @@ bool test_SRL_HL(System* system, uint8_t test_value, bool print_all);
 
 /* Load instructions */
 
+bool test_LD_r8_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_r8_n8(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_r16_n16(System* system, uint16_t test_value, bool print_all);
+
+bool test_LD_HL_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_HL_n8(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_r8_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_r16_A(System* system, uint16_t test_value, bool print_all);
+
+bool test_LD_n16_A(System* system, uint16_t test_value, bool print_all);
 
 
 /* Stack operations instructions */

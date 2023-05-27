@@ -2,25 +2,32 @@
 
 /* Batch tests */
 
-static uint16_t address = 0x00FF;
-static uint8_t test_register = B;
+static uint16_t test_address = 0x00FF;
+static uint8_t test_r8_1 = B;
+static uint8_t test_r8_2 = D;
+static uint8_t test_r16 = BC;
+static uint8_t test_uint8 = 0xF0;
+static uint16_t test_uint16 = 0xC0DE;
 
 bool test_all(System* system, bool print_all) {
     uint16_t sum = 0;
     /* 8-bit instructions */
-    sum += (int)test_8bit(system, print_all);
+    sum += test_8bit(system, print_all);
 
     /* 16-bit instructions*/
-    sum += (int)test_16bit(system, print_all);
+    sum += test_16bit(system, print_all);
 
     /* Stack operations instructions */
-    sum += (int)test_stack(system, print_all);
+    sum += test_stack(system, print_all);
 
     /* Bit operations instructions */
     sum += test_bit(system, print_all);
 
     /* Bit shift instructions */
     sum += test_bitshift(system, print_all);
+
+    /* Load instructions */
+    sum += test_load(system, print_all);
 
     /* Result */
     if (sum) { printf("\nTotal of %hu failed tests.\n", sum); } else { printf("\nTotal:\nNo failures!\n"); }
@@ -130,6 +137,24 @@ bool test_bitshift(System* system, bool print_all) {
     return sum;
 }
 
+bool test_load(System* system, bool print_all) {
+    uint16_t sum = 0;
+    printf("\nLoad instructions test.\n");
+
+    sum += test_LD_r8_r8(system, test_uint8, print_all);
+    sum += test_LD_r8_n8(system, test_uint8, print_all);
+    sum += test_LD_r16_n16(system, test_uint16, print_all);
+    sum += test_LD_HL_r8(system, test_uint8, print_all);
+    sum += test_LD_HL_n8(system, test_uint8, print_all);
+    sum += test_LD_r8_HL(system, test_uint8, print_all);
+    sum += test_LD_r16_A(system, test_uint16, print_all);
+    sum += test_LD_n16_A(system, test_uint16, print_all);
+
+    /* Result */
+    if (sum) { printf("\nLoad instructions:\nTotal of %hu failed tests.\n", sum); } else { printf("\nLoad instructions:\nNo failures!\n"); }
+    return sum;
+}
+
 bool test_stack(System* system, bool print_all) {
     uint16_t sum = 0;
     /* They are very long too */
@@ -156,10 +181,10 @@ bool test_ADC_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
-        ADC_A_r8(system, test_register);
+        ADC_A_r8(system, test_r8_1);
         uint16_t res = (uint8_t)test_value + i;
         zero = !res;
         sub = 0;
@@ -174,10 +199,10 @@ bool test_ADC_A_r8(System* system, uint8_t test_value, bool print_all) {
     }
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(HALFCARRY, false);
         SET_FLAG(CARRY, true);
-        ADC_A_r8(system, test_register);
+        ADC_A_r8(system, test_r8_1);
         uint16_t res = (uint8_t)test_value + i + 1;
         if (res > 0xFF) { carry = true; } else { carry = false; }
         if ((i & 0xF + test_value & 0xF) & 0x10 == 0x10) { halfcarry = true; } else { halfcarry = false; }
@@ -206,7 +231,7 @@ bool test_ADC_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, false);
@@ -228,7 +253,7 @@ bool test_ADC_A_HL(System* system, uint8_t test_value, bool print_all) {
     }
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, true);
@@ -312,10 +337,10 @@ bool test_ADD_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
-        ADD_A_r8(system, test_register);
+        ADD_A_r8(system, test_r8_1);
         uint16_t res = (uint8_t)test_value + i;
         zero = !res;
         sub = 0;
@@ -412,10 +437,10 @@ bool test_AND_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
-        AND_A_r8(system, test_register);
+        AND_A_r8(system, test_r8_1);
         uint16_t res = (uint8_t)test_value & i;
         zero = !res;
         sub = 0;
@@ -445,7 +470,7 @@ bool test_AND_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, false);
@@ -512,10 +537,10 @@ bool test_CP_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
-        CP_A_r8(system, test_register);
+        CP_A_r8(system, test_r8_1);
         uint16_t res = (uint8_t)i - test_value;
         zero = !res;
         sub = 1;
@@ -545,7 +570,7 @@ bool test_CP_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, false);
@@ -613,20 +638,20 @@ bool test_DEC_r8(System* system, bool print_all) {
     bool carry = false;
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
-        system->registers[test_register] = i;
+        system->registers[test_r8_1] = i;
         SET_FLAG(SUB, false);
         SET_FLAG(HALFCARRY, false);
         SET_FLAG(ZERO, false);
         carry = GET_FLAG(CARRY);
-        DEC_r8(system, test_register);
+        DEC_r8(system, test_r8_1);
         uint8_t res = i - 1;
         zero = res == 0;
         halfcarry = ((res) & 0xF == 0b1111);
         sub = true;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
             if (print_all)printf("DEC r8: %hhu passed\n", i);
         } else {
-            printf("DEC r8: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("DEC r8: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -646,7 +671,7 @@ bool test_DEC_HL(System* system, bool print_all) {
     bool carry = false;
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
-        system->memory[address] = i;
+        system->memory[test_address] = i;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(SUB, false);
@@ -658,10 +683,10 @@ bool test_DEC_HL(System* system, bool print_all) {
         zero = res == 0;
         halfcarry = ((res) & 0xF == 0b1111);
         sub = true;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
             if (print_all)printf("DEC [HL]: %hhu passed\n", i);
         } else {
-            printf("DEC [HL]: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("DEC [HL]: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -681,20 +706,20 @@ bool test_INC_r8(System* system, bool print_all) {
     bool carry = false;
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
-        system->registers[test_register] = i;
+        system->registers[test_r8_1] = i;
         SET_FLAG(SUB, false);
         SET_FLAG(HALFCARRY, false);
         SET_FLAG(ZERO, false);
         carry = GET_FLAG(CARRY);
-        INC_r8(system, test_register);
+        INC_r8(system, test_r8_1);
         uint8_t res = i + 1;
         zero = res == 0;
         halfcarry = ((res - 1) & 0xF == 0b1111);
         sub = false;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
             if (print_all)printf("INC r8: %hhu passed\n", i);
         } else {
-            printf("INC r8: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("INC r8: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -715,7 +740,7 @@ bool test_INC_HL(System* system, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         /* Default values */
-        system->memory[address] = i;
+        system->memory[test_address] = i;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         system->registers[F] = 0x00;
@@ -728,10 +753,10 @@ bool test_INC_HL(System* system, bool print_all) {
         halfcarry = ((res - 1) & 0xF == 0b1111);
         sub = false;
         /* Test */
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
             if (print_all)printf("INC [HL]: %hhu passed\n", i);
         } else {
-            printf("INC [HL]: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("INC [HL]: %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, res, zero, sub, halfcarry, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -752,11 +777,11 @@ bool test_OR_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
         bool carry = GET_FLAG(CARRY);
-        OR_A_r8(system, test_register);
+        OR_A_r8(system, test_r8_1);
         uint8_t res = (uint8_t)i | test_value;
         carry = false;
         halfcarry = false;
@@ -786,7 +811,7 @@ bool test_OR_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         system->registers[F] = 0x00;
@@ -854,10 +879,10 @@ bool test_SBC_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, 0);
         SET_FLAG(HALFCARRY, false);
-        SBC_A_r8(system, test_register);
+        SBC_A_r8(system, test_r8_1);
         uint8_t res = (uint8_t)i - test_value;
         zero = !res;
         sub = 1;
@@ -874,10 +899,10 @@ bool test_SBC_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(HALFCARRY, false);
         SET_FLAG(CARRY, true);
-        SBC_A_r8(system, test_register);
+        SBC_A_r8(system, test_r8_1);
         uint8_t res = (uint8_t)i - (uint8_t)test_value - 1;
         sub = 1;
         zero = !res;
@@ -908,7 +933,7 @@ bool test_SBC_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, 0);
@@ -930,7 +955,7 @@ bool test_SBC_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, 1);
@@ -1019,10 +1044,10 @@ bool test_SUB_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
-        SUB_A_r8(system, test_register);
+        SUB_A_r8(system, test_r8_1);
         uint8_t res = (uint8_t)i - test_value;
         zero = !res;
         sub = 1;
@@ -1053,7 +1078,7 @@ bool test_SUB_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         SET_FLAG(CARRY, false);
@@ -1122,11 +1147,11 @@ bool test_XOR_A_r8(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->registers[test_register] = test_value;
+        system->registers[test_r8_1] = test_value;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
         bool carry = GET_FLAG(CARRY);
-        XOR_A_r8(system, test_register);
+        XOR_A_r8(system, test_r8_1);
         uint8_t res = (uint8_t)i ^ test_value;
         carry = false;
         halfcarry = false;
@@ -1156,7 +1181,7 @@ bool test_XOR_A_HL(System* system, uint8_t test_value, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
-        system->memory[address] = test_value;
+        system->memory[test_address] = test_value;
         system->registers[H] = 0x00;
         system->registers[L] = 0xFF;
         system->registers[F] = 0x00;
@@ -1306,8 +1331,8 @@ bool test_BIT_u3_r8(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
 
     for (int i = 0; i < 8; i++) {
-        system->registers[test_register] = test_value;
-        BIT_u3_r8(system, i, test_register);
+        system->registers[test_r8_1] = test_value;
+        BIT_u3_r8(system, i, test_r8_1);
         zero = !(test_value & (1 << i));
         if (GET_FLAG(ZERO) == zero) {
             if (print_all)printf("BIT u3,r8: %hhu %hhu passed\n", i, test_value);
@@ -1329,8 +1354,8 @@ bool test_BIT_u3_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
 
     for (int i = 0; i < 8; i++) {
-        system->memory[address] = test_value;
-        SET_16BIT_REGISTER(HL, address);
+        system->memory[test_address] = test_value;
+        SET_16BIT_REGISTER(HL, test_address);
         BIT_u3_HL(system, i);
         zero = !(test_value & (1 << i));
         if (GET_FLAG(ZERO) == zero) {
@@ -1352,13 +1377,13 @@ bool test_RES_u3_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
 
     for (int i = 0; i < 8; i++) {
-        system->registers[test_register] = test_value;
-        RES_u3_r8(system, i, test_register);
+        system->registers[test_r8_1] = test_value;
+        RES_u3_r8(system, i, test_r8_1);
         uint8_t res = test_value & ~(1 << i);
-        if (res == system->registers[test_register]) {
+        if (res == system->registers[test_r8_1]) {
             if (print_all)printf("RES u3,r8: %hhu %hhu passed\n", i, test_value);
         } else {
-            printf("RES u3,r8: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->registers[test_register]);
+            printf("RES u3,r8: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->registers[test_r8_1]);
             failed = true;
         }
     }
@@ -1374,11 +1399,11 @@ bool test_RES_u3_HL(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
 
     for (int i = 0; i < 8; i++) {
-        system->memory[address] = test_value;
-        SET_16BIT_REGISTER(HL, address);
+        system->memory[test_address] = test_value;
+        SET_16BIT_REGISTER(HL, test_address);
         RES_u3_HL(system, i);
         uint8_t res = test_value & ~(1 << i);
-        if (res == system->memory[address]) {
+        if (res == system->memory[test_address]) {
             if (print_all)printf("RES u3,[HL]: %hhu %hhu passed\n", i, test_value);
         } else {
             printf("RES u3,[HL]: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->registers[A]);
@@ -1397,13 +1422,13 @@ bool test_SET_u3_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
 
     for (int i = 0; i < 8; i++) {
-        system->registers[test_register] = test_value;
-        SET_u3_r8(system, i, test_register);
+        system->registers[test_r8_1] = test_value;
+        SET_u3_r8(system, i, test_r8_1);
         uint8_t res = test_value | (1 << i);
-        if (res == system->registers[test_register]) {
+        if (res == system->registers[test_r8_1]) {
             if (print_all)printf("SET u3,r8: %hhu %hhu passed\n", i, test_value);
         } else {
-            printf("SET u3,r8: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->registers[test_register]);
+            printf("SET u3,r8: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->registers[test_r8_1]);
             failed = true;
         }
     }
@@ -1419,14 +1444,14 @@ bool test_SET_u3_HL(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
 
     for (int i = 0; i < 8; i++) {
-        system->memory[address] = test_value;
-        SET_16BIT_REGISTER(HL, address);
+        system->memory[test_address] = test_value;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_u3_HL(system, i);
         uint8_t res = test_value | (1 << i);
-        if (res == system->memory[address]) {
+        if (res == system->memory[test_address]) {
             if (print_all)printf("SET u3,[HL]: %hhu %hhu passed\n", i, test_value);
         } else {
-            printf("SET u3,[HL]: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->memory[address]);
+            printf("SET u3,[HL]: %hhu %hhu failed\nExpected: %u got: %u\n", i, test_value, res, system->memory[test_address]);
             failed = true;
         }
     }
@@ -1442,16 +1467,16 @@ bool test_SWAP_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
 
-    system->registers[test_register] = test_value;
-    SWAP_r8(system, test_register);
+    system->registers[test_r8_1] = test_value;
+    SWAP_r8(system, test_r8_1);
 
     uint8_t temp = test_value & 0xF;
     uint8_t res = (test_value >> 4) + (test_value << 4);
     zero = !res;
-    if ((uint8_t)system->registers[test_register] == (uint8_t)res && 0 == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+    if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && 0 == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
         if (print_all)printf("SWAP r8: %hhu (no carry) passed\n", test_value);
     } else {
-        printf("SWAP r8: %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", test_value, res, zero, 0, 0, 0, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+        printf("SWAP r8: %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", test_value, res, zero, 0, 0, 0, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
         failed = true;
     }
     if (!failed) {
@@ -1466,16 +1491,16 @@ bool test_SWAP_HL(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
     SWAP_HL(system);
     uint8_t temp = test_value & 0xF;
     uint8_t res = (test_value >> 4) + (test_value << 4);
     zero = !res;
-    if ((uint8_t)system->memory[address] == (uint8_t)res && 0 == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+    if ((uint8_t)system->memory[test_address] == (uint8_t)res && 0 == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
         if (print_all)printf("SWAP [HL]: %hhu (no carry) passed\n", test_value);
     } else {
-        printf("SWAP [HL]: %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", test_value, res, zero, 0, 0, 0, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+        printf("SWAP [HL]: %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", test_value, res, zero, 0, 0, 0, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
         failed = true;
     }
     if (!failed) {
@@ -1493,31 +1518,31 @@ bool test_RL_r8(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & (1 << 7);
+        carry = system->registers[test_r8_1] & (1 << 7);
         SET_FLAG(CARRY, false);
-        uint8_t res = (system->registers[test_register] << 1) + 0;
-        RL_r8(system, test_register);
+        uint8_t res = (system->registers[test_r8_1] << 1) + 0;
+        RL_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RL r8: %hhu (no carry) passed\n", test_value);
         } else {
-            printf("RL r8: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RL r8: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
     for (uint8_t i = 1; i < 9; i++) {
         SET_FLAG(CARRY, true);
-        carry = system->registers[test_register] & (1 << 7);
-        uint8_t res = (system->registers[test_register] << 1) + 1;
-        RL_r8(system, test_register);
+        carry = system->registers[test_r8_1] & (1 << 7);
+        uint8_t res = (system->registers[test_r8_1] << 1) + 1;
+        RL_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RL r8: %hhu (no carry) passed\n", test_value);
         } else {
-            printf("RL r8: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RL r8: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1534,32 +1559,32 @@ bool test_RL_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
     for (uint8_t i = 1; i < 9; i++) {
         SET_FLAG(CARRY, false);
-        carry = system->memory[address] & (1 << 7);
-        uint8_t res = (system->memory[address] << 1) + 0;
+        carry = system->memory[test_address] & (1 << 7);
+        uint8_t res = (system->memory[test_address] << 1) + 0;
         RL_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RL [HL]: %hhu (no carry) passed\n", test_value);
         } else {
-            printf("RL [HL]: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RL [HL]: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
-    system->memory[address] = test_value;
+    system->memory[test_address] = test_value;
     for (uint8_t i = 1; i < 9; i++) {
         SET_FLAG(CARRY, true);
-        carry = system->memory[address] & (1 << 7);
-        uint8_t res = (system->memory[address] << 1) + 1;
+        carry = system->memory[test_address] & (1 << 7);
+        uint8_t res = (system->memory[test_address] << 1) + 1;
         RL_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RL [HL]: %hhu (carry) passed\n", test_value);
         } else {
-            printf("RL [HL]: %hhu %hhu (carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RL [HL]: %hhu %hhu (carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1612,17 +1637,17 @@ bool test_RLC_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
     bool carry = false;
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & (1 << 7);
-        uint8_t res = (system->registers[test_register] << 1) + carry;
-        RLC_r8(system, test_register);
+        carry = system->registers[test_r8_1] & (1 << 7);
+        uint8_t res = (system->registers[test_r8_1] << 1) + carry;
+        RLC_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RLC r8: %hhu passed\n", test_value);
         } else {
-            printf("RLC r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RLC r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1639,18 +1664,18 @@ bool test_RLC_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->memory[address] & (1 << 7);
-        uint8_t res = (system->memory[address] << 1) + carry;
+        carry = system->memory[test_address] & (1 << 7);
+        uint8_t res = (system->memory[test_address] << 1) + carry;
         RLC_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RLC [HL]: %hhu passed\n", test_value);
         } else {
-            printf("RLC [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RLC [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1691,31 +1716,31 @@ bool test_RR_r8(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & 1;
+        carry = system->registers[test_r8_1] & 1;
         SET_FLAG(CARRY, false);
-        uint8_t res = (system->registers[test_register] >> 1);
-        RR_r8(system, test_register);
+        uint8_t res = (system->registers[test_r8_1] >> 1);
+        RR_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RR r8: %hhu (no carry) passed\n", test_value);
         } else {
-            printf("RR r8: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RR r8: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
     system->registers[A] = test_value;
     for (uint8_t i = 1; i < 9; i++) {
         SET_FLAG(CARRY, true);
-        carry = system->registers[test_register] & 1;
-        uint8_t res = (system->registers[test_register] >> 1) + (1 << 7);
-        RR_r8(system, test_register);
+        carry = system->registers[test_r8_1] & 1;
+        uint8_t res = (system->registers[test_r8_1] >> 1) + (1 << 7);
+        RR_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RR r8: %hhu (carry) passed\n", test_value);
         } else {
-            printf("RR r8: %hhu %hhu (carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RR r8: %hhu %hhu (carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1732,32 +1757,32 @@ bool test_RR_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
     for (uint8_t i = 1; i < 9; i++) {
         SET_FLAG(CARRY, false);
-        carry = system->memory[address] & 1;
-        uint8_t res = (system->memory[address] >> 1);
+        carry = system->memory[test_address] & 1;
+        uint8_t res = (system->memory[test_address] >> 1);
         RR_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RR [HL]: %hhu (no carry) passed\n", test_value);
         } else {
-            printf("RR [HL]: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RR [HL]: %hhu %hhu (no carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
-    system->memory[address] = test_value;
+    system->memory[test_address] = test_value;
     for (uint8_t i = 1; i < 9; i++) {
         SET_FLAG(CARRY, true);
-        carry = system->memory[address] & 1;
-        uint8_t res = (system->memory[address] >> 1) + (1 << 7);
+        carry = system->memory[test_address] & 1;
+        uint8_t res = (system->memory[test_address] >> 1) + (1 << 7);
         RR_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RR [HL]: %hhu (carry) passed\n", test_value);
         } else {
-            printf("RR [HL]: %hhu %hhu (carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RR [HL]: %hhu %hhu (carry) failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1810,17 +1835,17 @@ bool test_RRC_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
     bool carry = false;
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & 1;
-        uint8_t res = (system->registers[test_register] >> 1) + (carry << 7);
-        RRC_r8(system, test_register);
+        carry = system->registers[test_r8_1] & 1;
+        uint8_t res = (system->registers[test_r8_1] >> 1) + (carry << 7);
+        RRC_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RRC r8: %hhu passed\n", test_value);
         } else {
-            printf("RRC r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RRC r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1837,18 +1862,18 @@ bool test_RRC_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->memory[address] & 1;
-        uint8_t res = (system->memory[address] >> 1) + (carry << 7);
+        carry = system->memory[test_address] & 1;
+        uint8_t res = (system->memory[test_address] >> 1) + (carry << 7);
         RRC_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("RRC [HL]: %hhu passed\n", test_value);
         } else {
-            printf("RRC [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("RRC [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1888,17 +1913,17 @@ bool test_SLA_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
     bool carry = false;
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & (1 << 7);
-        uint8_t res = (system->registers[test_register] << 1);
-        SLA_r8(system, test_register);
+        carry = system->registers[test_r8_1] & (1 << 7);
+        uint8_t res = (system->registers[test_r8_1] << 1);
+        SLA_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("SLA r8: %hhu passed\n", test_value);
         } else {
-            printf("SLA r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("SLA r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1915,17 +1940,17 @@ bool test_SLA_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->memory[address] & (1 << 7);
-        uint8_t res = (system->memory[address] << 1);
+        carry = system->memory[test_address] & (1 << 7);
+        uint8_t res = (system->memory[test_address] << 1);
         SLA_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("SLA [HL]: %hhu passed\n", test_value);
         } else {
-            printf("SLA [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("SLA [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1941,17 +1966,17 @@ bool test_SRA_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
     bool carry = false;
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & 1;
-        uint8_t res = (system->registers[test_register] >> 1) + (system->registers[A] & (1 << 7));
-        SRA_r8(system, test_register);
+        carry = system->registers[test_r8_1] & 1;
+        uint8_t res = (system->registers[test_r8_1] >> 1) + (system->registers[A] & (1 << 7));
+        SRA_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("SRA r8: %hhu passed\n", test_value);
         } else {
-            printf("SRA r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("SRA r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1968,18 +1993,18 @@ bool test_SRA_HL(System* system, uint8_t test_value, bool print_all) {
     bool zero = false;
     bool carry = false;
 
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->memory[address] & 1;
-        uint8_t res = (system->memory[address] >> 1) + (system->memory[address] & (1 << 7));
+        carry = system->memory[test_address] & 1;
+        uint8_t res = (system->memory[test_address] >> 1) + (system->memory[test_address] & (1 << 7));
         SRA_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("SRA [HL]: %hhu passed\n", test_value);
         } else {
-            printf("SRA [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("SRA [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -1995,17 +2020,17 @@ bool test_SRL_r8(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
     bool carry = false;
-    system->registers[test_register] = test_value;
+    system->registers[test_r8_1] = test_value;
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->registers[test_register] & 1;
-        uint8_t res = (system->registers[test_register] >> 1);
-        SRL_r8(system, test_register);
+        carry = system->registers[test_r8_1] & 1;
+        uint8_t res = (system->registers[test_r8_1] >> 1);
+        SRL_r8(system, test_r8_1);
         zero = !res;
-        if ((uint8_t)system->registers[test_register] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("SRL r8: %hhu passed\n", test_value);
         } else {
-            printf("SRL r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_register], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("SRL r8: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->registers[test_r8_1], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -2021,18 +2046,18 @@ bool test_SRL_HL(System* system, uint8_t test_value, bool print_all) {
     bool failed = false;
     bool zero = false;
     bool carry = false;
-    system->memory[address] = test_value;
-    SET_16BIT_REGISTER(HL, address);
+    system->memory[test_address] = test_value;
+    SET_16BIT_REGISTER(HL, test_address);
 
     for (uint8_t i = 1; i < 9; i++) {
-        carry = system->memory[address] & 1;
-        uint8_t res = (system->memory[address] >> 1);
+        carry = system->memory[test_address] & 1;
+        uint8_t res = (system->memory[test_address] >> 1);
         SRL_HL(system);
         zero = !res;
-        if ((uint8_t)system->memory[address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && carry == GET_FLAG(CARRY) && 0 == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && 0 == GET_FLAG(SUB)) {
             if (print_all)printf("SRL [HL]: %hhu passed\n", test_value);
         } else {
-            printf("SRL [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("SRL [HL]: %hhu %hhu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, 0, 0, carry, system->memory[test_address], GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -2045,7 +2070,190 @@ bool test_SRL_HL(System* system, uint8_t test_value, bool print_all) {
 
 /* Load instructions */
 
+bool test_LD_r8_r8(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD r8,r8 test:\n");
+    bool failed = false;
 
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->registers[test_r8_1] = test_value;
+        system->registers[test_r8_2] = i;
+        LD_r8_r8(system, test_r8_1, test_r8_2);
+        uint8_t res = i;
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res) {
+            if (print_all)printf("LD r8,r8: %hhu passed\n", test_value);
+        } else {
+            printf("LD r8,r8: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[test_r8_1]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_r8_n8(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD r8,n8 test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->registers[test_r8_1] = test_value;
+        LD_r8_n8(system, test_r8_1, i);
+        uint8_t res = i;
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res) {
+            if (print_all)printf("LD r8,n8: %hhu passed\n", test_value);
+        } else {
+            printf("LD r8,n8: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[test_r8_1]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_r16_n16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD r16,n16 test:\n");
+    bool failed = false;
+
+    for (uint32_t i = 0; i <= 0xFFFF; i++) {
+        SET_16BIT_REGISTER(test_r16, test_value);
+        LD_r16_n16(system, test_r16, i);
+        uint16_t res = i;
+        if ((uint16_t)GET_16BIT_REGISTER(test_r16) == (uint16_t)res) {
+            if (print_all)printf("LD r16,n16: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LD r16,n16: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, GET_16BIT_REGISTER(test_r16));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_HL_r8(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD [HL],r8 test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = test_value;
+        system->registers[test_r8_1] = i;
+        LD_HL_r8(system, test_r8_1);
+        uint8_t res = i;
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res) {
+            if (print_all)printf("LD [HL],r8: %hhu passed\n", test_value);
+        } else {
+            printf("LD [HL],r8: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_HL_n8(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD [HL],n8 test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = test_value;
+        LD_HL_n8(system, i);
+        uint8_t res = i;
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res) {
+            if (print_all)printf("LD [HL],n8: %hhu passed\n", test_value);
+        } else {
+            printf("LD [HL],n8: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_r8_HL(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD r8,[HL] test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = i;
+        system->registers[test_r8_1] = test_value;
+        LD_r8_HL(system, test_r8_1);
+        uint8_t res = i;
+        if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res) {
+            if (print_all)printf("LD r8,[HL]: %hhu passed\n", test_value);
+        } else {
+            printf("LD r8,[HL]: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[test_r8_1]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_r16_A(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD r16,A test:\n");
+    bool failed = false;
+
+    for (uint32_t i = 0; i <= 0xFFFF; i++) {
+        system->registers[A] = i;
+        SET_16BIT_REGISTER(test_r16, test_address);
+        system->memory[test_address] = test_value;
+        LD_r16_A(system, test_r16);
+        uint8_t res = i;
+        if (system->memory[test_address] == (uint8_t)res) {
+            if (print_all)printf("LD r16,A: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LD r16,A: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_n16_A(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD n16,A test:\n");
+    bool failed = false;
+
+    for (uint32_t i = 0; i <= 0xFFFF; i++) {
+        system->registers[A] = i;
+        system->memory[test_address] = test_value;
+        LD_n16_A(system, test_address);
+        uint8_t res = i;
+        if (system->memory[test_address] == (uint8_t)res) {
+            if (print_all)printf("LD n16,A: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LD n16,A: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
 
 /* Stack operations instructions */
 

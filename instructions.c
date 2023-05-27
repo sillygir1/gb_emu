@@ -501,7 +501,41 @@ void SRL_HL(System* system) {
 
 /* Load instructions */
 
+void LD_r8_r8(System* system, uint8_t r8_1, uint8_t r8_2) {
+    system->registers[r8_1] = system->registers[r8_2];
+}
 
+void LD_r8_n8(System* system, uint8_t r8, uint8_t n8) {
+    system->registers[r8] = n8;
+}
+
+void LD_r16_n16(System* system, uint8_t r16, uint16_t n16) {
+    SET_16BIT_REGISTER(r16, n16);
+}
+
+void LD_HL_r8(System* system, uint8_t r8) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->memory[address] = system->registers[r8];
+}
+
+void LD_HL_n8(System* system, uint8_t n8) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->memory[address] = n8;
+}
+
+void LD_r8_HL(System* system, uint8_t r8) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->registers[r8] = system->memory[address];
+}
+
+void LD_r16_A(System* system, uint8_t r16) {
+    uint16_t address = GET_16BIT_REGISTER(r16);
+    system->memory[address] = system->registers[A];
+}
+
+void LD_n16_A(System* system, uint16_t n16) {
+    system->memory[n16] = system->registers[A];
+}
 
 /* Stack operations instructions */
 
