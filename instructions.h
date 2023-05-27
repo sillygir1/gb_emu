@@ -221,6 +221,87 @@ void SWAP_r8(System* system, uint8_t r8);
 /// @param system System struct
 void SWAP_HL(System* system);
 
+/* Bit shift instructions */
+
+// Rotate bits in register r8 left through carry.
+/// @param system System struct
+/// @param r8
+void RL_r8(System* system, uint8_t r8);
+
+// Rotate the byte pointed to by HL left through carry.
+/// @param system System struct
+void RL_HL(System* system);
+
+// Rotate register A left through carry.
+/// @param system System struct
+void RLA(System* system);
+
+// Rotate register r8 left.
+/// @param system System struct
+/// @param r8
+void RLC_r8(System* system, uint8_t r8);
+
+// Rotate the byte pointed to by HL left.
+/// @param system System struct
+void RLC_HL(System* system);
+
+// Rotate register A left.
+/// @param system System struct
+void RLCA(System* system);
+
+// Rotate register r8 right through carry.
+/// @param system System struct
+/// @param r8
+void RR_r8(System* system, uint8_t r8);
+
+// Rotate the byte pointed to by HL right through carry.
+/// @param system System struct
+void RR_HL(System* system);
+
+// Rotate register A right through carry.
+/// @param system System struct
+void RRA(System* system);
+
+// Rotate register r8 right.
+/// @param system System struct
+/// @param r8
+void RRC_r8(System* system, uint8_t r8);
+
+// Rotate the byte pointed to by HL right.
+/// @param system System struct
+void RRC_HL(System* system);
+
+// Rotate register A right.
+/// @param system System struct
+void RRCA(System* system);
+
+// Shift Left Arithmetically register r8.
+/// @param system System struct
+/// @param r8
+void SLA_r8(System* system, uint8_t r8);
+
+// Shift Left Arithmetically the byte pointed to by HL.
+/// @param system System struct
+void SLA_HL(System* system);
+
+// Shift Right Arithmetically register r8.
+/// @param system System struct
+/// @param r8
+void SRA_r8(System* system, uint8_t r8);
+
+// Shift Right Arithmetically the byte pointed to by HL.
+/// @param system System struct
+void SRA_HL(System* system);
+
+// Shift Right Logically register r8.
+/// @param system System struct
+/// @param r8
+void SRL_r8(System* system, uint8_t r8);
+
+// Shift Right Logically the byte pointed to by HL.
+/// @param system System struct
+void SRL_HL(System* system);
+
 /* Stack operations instructions */
 
 // Add the value in SP to HL.

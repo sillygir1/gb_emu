@@ -88,6 +88,13 @@ void static SWAP_flags(System* system, bool value) {
     SET_FLAG(CARRY, false);
 }
 
+void static BITSHIFT_flags(System* system, uint8_t result, bool carry) {
+    SET_FLAG(ZERO, !result);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(CARRY, carry);
+}
+
 /* 8-bit arithmetic and logic instructions */
 
 void ADC_A_r8(System* system, uint8_t S, uint8_t r8) {
@@ -342,6 +349,153 @@ void SWAP_HL(System* system) {
     uint8_t temp = system->memory[address] & 0xF;
     uint8_t result = (temp << 4) + (system->memory[address] >> 4);
     SWAP_flags(system, result);
+    system->memory[address] = result;
+}
+
+/* Bit shift instructions */
+
+void RL_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & (1 << 7);
+    uint8_t result = (system->registers[r8] << 1) + GET_FLAG(CARRY);
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void RL_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & (1 << 7);
+    uint8_t result = (system->memory[address] << 1) + GET_FLAG(CARRY);
+    BITSHIFT_flags(system, result, carry);
+    system->memory[address] = result;
+}
+
+void RLA(System* system) {
+    bool carry = system->registers[A] & (1 << 7);
+    uint8_t result = (system->registers[A] << 1) + GET_FLAG(CARRY);
+    SET_FLAG(ZERO, false);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(CARRY, carry);
+    system->registers[A] = result;
+}
+
+void RLC_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & (1 << 7);
+    uint8_t result = (system->registers[r8] << 1) + carry;
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void RLC_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & (1 << 7);
+    uint8_t result = (system->memory[address] << 1) + carry;
+    BITSHIFT_flags(system, result, carry);
+    system->memory[address] = result;
+}
+
+void RLCA(System* system) {
+    bool carry = system->registers[A] & (1 << 7);
+    uint8_t result = (system->registers[A] << 1) + carry;
+    SET_FLAG(ZERO, false);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(CARRY, carry);
+    system->registers[A] = result;
+}
+
+void RR_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & 1;
+    uint8_t result = (system->registers[r8] >> 1) + (GET_FLAG(CARRY) << 7);
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void RR_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & 1;
+    uint8_t result = (system->memory[address] >> 1) + (GET_FLAG(CARRY) << 7);
+    BITSHIFT_flags(system, result, carry);
+    system->memory[address] = result;
+}
+
+void RRA(System* system) {
+    bool carry = system->registers[A] & 1;
+    uint8_t result = (system->registers[A] >> 1) + (GET_FLAG(CARRY) << 7);
+    SET_FLAG(ZERO, false);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(CARRY, carry);
+    system->registers[A] = result;
+}
+
+void RRC_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & 1;
+    uint8_t result = (system->registers[r8] >> 1) + (carry << 7);
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void RRC_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & 1;
+    uint8_t result = (system->memory[address] >> 1) + (carry << 7);
+    BITSHIFT_flags(system, result, carry);
+    system->memory[address] = result;
+}
+
+void RRCA(System* system) {
+    bool carry = system->registers[A] & 1;
+    uint8_t result = (system->registers[A] >> 1) + (carry << 7);
+    SET_FLAG(ZERO, false);
+    SET_FLAG(SUB, false);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(CARRY, carry);
+    system->registers[A] = result;
+}
+
+void SLA_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & (1 << 7);
+    uint8_t result = system->registers[r8] << 1;
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void SLA_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & (1 << 7);
+    uint8_t result = system->memory[address] << 1;
+    BITSHIFT_flags(system, result, carry);
+    system->memory[address] = result;
+}
+
+void SRA_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & 1;
+    uint8_t result = (system->registers[r8] >> 1) + (system->registers[r8] & (1 << 7));
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void SRA_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & 1;
+    uint8_t result = (system->memory[address] >> 1) + (system->memory[address] & (1 << 7));
+    BITSHIFT_flags(system, result, carry);
+    system->memory[address] = result;
+}
+
+void SRL_r8(System* system, uint8_t r8) {
+    bool carry = system->registers[r8] & 1;
+    uint8_t result = system->registers[r8] >> 1;
+    BITSHIFT_flags(system, result, carry);
+    system->registers[r8] = result;
+}
+
+void SRL_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    bool carry = system->memory[address] & 1;
+    uint8_t result = (system->memory[address] >> 1);
+    BITSHIFT_flags(system, result, carry);
     system->memory[address] = result;
 }
 

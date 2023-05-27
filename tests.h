@@ -17,6 +17,8 @@ bool test_stack(System* system, bool print_all);
 
 bool test_bit(System* system, bool print_all);
 
+bool test_bitshift(System* system, bool print_all);
+
 /* 8-bit arithmetic and logic instructions */
 
 bool test_ADC_A_r8(System* system, uint8_t test_value, bool print_all);
@@ -100,6 +102,44 @@ bool test_SET_u3_HL(System* system, uint8_t test_value, bool print_all);
 bool test_SWAP_r8(System* system, uint8_t test_value, bool print_all);
 
 bool test_SWAP_HL(System* system, uint8_t test_value, bool print_all);
+
+/* Bit shift instructions */
+
+bool test_RL_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_RL_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_RLA(System* system, uint8_t test_value, bool print_all);
+
+bool test_RLC_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_RLC_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_RLCA(System* system, uint8_t test_value, bool print_all);
+
+bool test_RR_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_RR_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_RRA(System* system, uint8_t test_value, bool print_all);
+
+bool test_RRC_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_RRC_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_RRCA(System* system, uint8_t test_value, bool print_all);
+
+bool test_SLA_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_SLA_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_SRA_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_SRA_HL(System* system, uint8_t test_value, bool print_all);
+
+bool test_SRL_r8(System* system, uint8_t test_value, bool print_all);
+
+bool test_SRL_HL(System* system, uint8_t test_value, bool print_all);
 
 /* Stack operations instructions */
 
