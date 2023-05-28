@@ -537,6 +537,59 @@ void LD_n16_A(System* system, uint16_t n16) {
     system->memory[n16] = system->registers[A];
 }
 
+void LDH_n8_A(System* system, uint8_t n8) {
+    uint16_t address = 0xFF00 + n8;
+    system->memory[address] = system->registers[A];
+}
+
+void LDH_C_A(System* system) {
+    uint16_t address = 0xFF00 + system->registers[C];
+    system->memory[address] = system->registers[A];
+}
+
+void LD_A_r16(System* system, uint8_t r16) {
+    uint16_t address = GET_16BIT_REGISTER(r16);
+    system->registers[A] = system->memory[address];
+}
+
+void LD_A_n16(System* system, uint16_t n16) {
+    system->registers[A] = system->memory[n16];
+}
+
+void LDH_A_n8(System* system, uint8_t n8) {
+    uint16_t address = 0xFF00 + n8;
+    system->registers[A] = system->memory[address];
+}
+
+void LDH_A_C(System* system) {
+    uint16_t address = 0xFF00 + system->registers[C];
+    system->registers[A] = system->memory[address];
+}
+
+void LD_HLI_A(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->memory[address] = system->registers[A];
+    SET_16BIT_REGISTER(HL, address + 1);
+}
+
+void LD_HLD_A(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->memory[address] = system->registers[A];
+    SET_16BIT_REGISTER(HL, address - 1);
+}
+
+void LD_A_HLI(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->registers[A] = system->memory[address];
+    SET_16BIT_REGISTER(HL, address + 1);
+}
+
+void LD_A_HLD(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    system->registers[A] = system->memory[address];
+    SET_16BIT_REGISTER(HL, address - 1);
+}
+
 /* Stack operations instructions */
 
 void ADD_HL_SP(System* system) {

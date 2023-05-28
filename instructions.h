@@ -323,10 +323,10 @@ void LD_r16_A(System* system, uint8_t r16);
 /// @param n16 
 void LD_n16_A(System* system, uint16_t n16);
 
-/// @brief Store value in register A into the byte at address n16, provided the address is between $FF00 and $FFFF.
+/// @brief Store value in register A into the byte at address $FF00+n8
 /// @param system 
-/// @param n16 
-void LDH_n16_A(System* system, uint16_t n16);
+/// @param n8 
+void LDH_n8_A(System* system, uint8_t n8);
 
 /// @brief Store value in register A into the byte at address $FF00+C.
 /// @param system 
@@ -342,10 +342,10 @@ void LD_A_r16(System* system, uint8_t r16);
 /// @param n16 
 void LD_A_n16(System* system, uint16_t n16);
 
-/// @brief Load value in register A from the byte at address n16, provided the address is between $FF00 and $FFFF.
+/// @brief Load value in register A from the byte at address $FF00+n8.
 /// @param system 
-/// @param n16 
-void LDH_A_n16(System* system, uint16_t n16);
+/// @param n8 
+void LDH_A_n8(System* system, uint8_t n8);
 
 /// @brief Load value in register A from the byte at address $FF00+c.
 /// @param system 

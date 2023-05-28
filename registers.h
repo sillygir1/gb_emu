@@ -14,6 +14,7 @@
 
 // 16-bit registers
 typedef enum {
+    AF,
     BC,
     DE,
     HL,

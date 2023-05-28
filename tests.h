@@ -157,10 +157,29 @@ bool test_LD_HL_n8(System* system, uint8_t test_value, bool print_all);
 
 bool test_LD_r8_HL(System* system, uint8_t test_value, bool print_all);
 
-bool test_LD_r16_A(System* system, uint16_t test_value, bool print_all);
+bool test_LD_r16_A(System* system, uint8_t test_value, bool print_all);
 
-bool test_LD_n16_A(System* system, uint16_t test_value, bool print_all);
+bool test_LD_n16_A(System* system, uint8_t test_value, bool print_all);
 
+bool test_LDH_n8_A(System* system, uint8_t test_value, bool print_all);
+
+bool test_LDH_C_A(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_A_r16(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_A_n16(System* system, uint8_t test_value, bool print_all);
+
+bool test_LDH_A_n8(System* system, uint8_t test_value, bool print_all);
+
+bool test_LDH_A_C(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_HLI_A(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_HLD_A(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_A_HLI(System* system, uint8_t test_value, bool print_all);
+
+bool test_LD_A_HLD(System* system, uint8_t test_value, bool print_all);
 
 /* Stack operations instructions */
 

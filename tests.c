@@ -2,7 +2,7 @@
 
 /* Batch tests */
 
-static uint16_t test_address = 0x00FF;
+static uint16_t test_address = 0xFF00;
 static uint8_t test_r8_1 = B;
 static uint8_t test_r8_2 = D;
 static uint8_t test_r16 = BC;
@@ -147,8 +147,18 @@ bool test_load(System* system, bool print_all) {
     sum += test_LD_HL_r8(system, test_uint8, print_all);
     sum += test_LD_HL_n8(system, test_uint8, print_all);
     sum += test_LD_r8_HL(system, test_uint8, print_all);
-    sum += test_LD_r16_A(system, test_uint16, print_all);
-    sum += test_LD_n16_A(system, test_uint16, print_all);
+    sum += test_LD_r16_A(system, test_uint8, print_all);
+    sum += test_LD_n16_A(system, test_uint8, print_all);
+    sum += test_LDH_n8_A(system, test_uint8, print_all);
+    sum += test_LDH_C_A(system, test_uint8, print_all);
+    sum += test_LD_A_r16(system, test_uint8, print_all);
+    sum += test_LD_A_n16(system, test_uint8, print_all);
+    sum += test_LDH_A_n8(system, test_uint8, print_all);
+    sum += test_LDH_A_C(system, test_uint8, print_all);
+    sum += test_LD_HLI_A(system, test_uint8, print_all);
+    sum += test_LD_HLD_A(system, test_uint8, print_all);
+    sum += test_LD_A_HLI(system, test_uint8, print_all);
+    sum += test_LD_A_HLD(system, test_uint8, print_all);
 
     /* Result */
     if (sum) { printf("\nLoad instructions:\nTotal of %hu failed tests.\n", sum); } else { printf("\nLoad instructions:\nNo failures!\n"); }
@@ -232,8 +242,7 @@ bool test_ADC_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
         ADC_A_HL(system);
@@ -254,8 +263,7 @@ bool test_ADC_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, true);
         SET_FLAG(HALFCARRY, false);
         ADC_A_HL(system);
@@ -471,8 +479,7 @@ bool test_AND_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
         AND_A_HL(system);
@@ -571,8 +578,7 @@ bool test_CP_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
         CP_A_HL(system);
@@ -672,8 +678,7 @@ bool test_DEC_HL(System* system, bool print_all) {
 
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->memory[test_address] = i;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(SUB, false);
         SET_FLAG(HALFCARRY, false);
         SET_FLAG(ZERO, false);
@@ -741,8 +746,7 @@ bool test_INC_HL(System* system, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         /* Default values */
         system->memory[test_address] = i;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         system->registers[F] = 0x00;
         carry = GET_FLAG(CARRY);
         /* Function to test */
@@ -812,8 +816,7 @@ bool test_OR_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         system->registers[F] = 0x00;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
@@ -934,8 +937,7 @@ bool test_SBC_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, 0);
         SET_FLAG(HALFCARRY, false);
         SBC_A_HL(system);
@@ -956,8 +958,7 @@ bool test_SBC_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, 1);
         SET_FLAG(HALFCARRY, false);
         SBC_A_HL(system);
@@ -1079,8 +1080,7 @@ bool test_SUB_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
         SUB_A_HL(system);
@@ -1182,8 +1182,7 @@ bool test_XOR_A_HL(System* system, uint8_t test_value, bool print_all) {
     for (uint16_t i = 0; i <= 0xFF; i++) {
         system->registers[A] = i;
         system->memory[test_address] = test_value;
-        system->registers[H] = 0x00;
-        system->registers[L] = 0xFF;
+        SET_16BIT_REGISTER(HL, test_address);
         system->registers[F] = 0x00;
         SET_FLAG(CARRY, false);
         SET_FLAG(HALFCARRY, false);
@@ -2124,7 +2123,7 @@ bool test_LD_r16_n16(System* system, uint16_t test_value, bool print_all) {
         LD_r16_n16(system, test_r16, i);
         uint16_t res = i;
         if ((uint16_t)GET_16BIT_REGISTER(test_r16) == (uint16_t)res) {
-            if (print_all)printf("LD r16,n16: %hhu %hhu passed\n", i, test_value);
+            if (print_all)printf("LD r16,n16: %hu %hu passed\n", i, test_value);
         } else {
             printf("LD r16,n16: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, GET_16BIT_REGISTER(test_r16));
             failed = true;
@@ -2208,7 +2207,7 @@ bool test_LD_r8_HL(System* system, uint8_t test_value, bool print_all) {
         return 1;
 }
 
-bool test_LD_r16_A(System* system, uint16_t test_value, bool print_all) {
+bool test_LD_r16_A(System* system, uint8_t test_value, bool print_all) {
     if (print_all) printf("LD r16,A test:\n");
     bool failed = false;
 
@@ -2232,7 +2231,7 @@ bool test_LD_r16_A(System* system, uint16_t test_value, bool print_all) {
         return 1;
 }
 
-bool test_LD_n16_A(System* system, uint16_t test_value, bool print_all) {
+bool test_LD_n16_A(System* system, uint8_t test_value, bool print_all) {
     if (print_all) printf("LD n16,A test:\n");
     bool failed = false;
 
@@ -2245,6 +2244,257 @@ bool test_LD_n16_A(System* system, uint16_t test_value, bool print_all) {
             if (print_all)printf("LD n16,A: %hhu %hhu passed\n", i, test_value);
         } else {
             printf("LD n16,A: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LDH_n8_A(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LDH n8,A test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->memory[test_address] = test_value;
+        system->registers[A] = i;
+        LDH_n8_A(system, test_address & 0xFF);
+        uint8_t res = i;
+
+        if (system->memory[test_address] == (uint8_t)res) {
+            if (print_all)printf("LDH n8,A: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LDH n8,A: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LDH_C_A(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LDH C,A test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->memory[test_address] = test_value;
+        system->registers[C] = test_address & 0xFF;
+        system->registers[A] = i;
+        LDH_C_A(system);
+        uint8_t res = i;
+
+        if (system->memory[test_address] == (uint8_t)res) {
+            if (print_all)printf("LDH C,A: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LDH C,A: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->memory[test_address]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_A_r16(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD A,r16 test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->memory[test_address] = i;
+        system->registers[A] = test_value;
+        SET_16BIT_REGISTER(test_r16, test_address);
+        LD_A_r16(system, test_r16);
+        uint8_t res = i;
+
+        if (system->registers[A] == (uint8_t)res) {
+            if (print_all)printf("LD A,r16: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LD A,r16: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[A]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_A_n16(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD A,n16 test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->memory[test_address] = i;
+        system->registers[A] = test_value;
+        LD_A_n16(system, test_address);
+        uint8_t res = i;
+
+        if (system->registers[A] == (uint8_t)res) {
+            if (print_all)printf("LD A,n16: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LD A,n16: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[A]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LDH_A_n8(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LDH A,n8 test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->memory[test_address] = i;
+        system->registers[A] = test_value;
+        LDH_A_n8(system, test_address & 0xFF);
+        uint8_t res = i;
+
+        if (system->registers[A] == res) {
+            if (print_all)printf("LDH A,n8: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LDH A,n8: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[A]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LDH_A_C(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LDH A,C test:\n");
+    bool failed = false;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        system->memory[test_address] = i;
+        system->registers[A] = test_value;
+        system->registers[C] = test_address & 0xFF;
+        LDH_A_C(system);
+        uint8_t res = i;
+
+        if (system->registers[A] == res) {
+            if (print_all)printf("LDH A,C: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("LDH A,C: %hhu %hhu failed\nExpected: %u, got: %u\n", i, test_value, res, system->registers[A]);
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_HLI_A(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD [HLI],A test:\n");
+    bool failed = false;
+    uint16_t hl = 0;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = test_value;
+        system->registers[A] = i;
+        LD_HLI_A(system);
+        hl = test_address + 1;
+        uint8_t res = i;
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && hl == GET_16BIT_REGISTER(HL)) {
+            if (print_all)printf("LD [HLI],A: %hhu passed\n", test_value);
+        } else {
+            printf("LD [HLI],A: %hhu %hhu failed\nExpected: %u, HL: %x got: %u, HL: %x\n", i, test_value, res, hl, system->memory[test_address], GET_16BIT_REGISTER(HL));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_HLD_A(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD [HLD],A test:\n");
+    bool failed = false;
+    uint16_t hl = 0;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = test_value;
+        system->registers[A] = i;
+        LD_HLD_A(system);
+        hl = test_address - 1;
+        uint8_t res = i;
+        if ((uint8_t)system->memory[test_address] == (uint8_t)res && hl == GET_16BIT_REGISTER(HL)) {
+            if (print_all)printf("LD [HLD],A: %hhu passed\n", test_value);
+        } else {
+            printf("LD [HLD],A: %hhu %hhu failed\nExpected: %u, HL: 0x%x got: %u, HL: 0x%x\n", i, test_value, res, hl, system->memory[test_address], GET_16BIT_REGISTER(HL));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_A_HLI(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD A,[HLI] test:\n");
+    bool failed = false;
+    uint16_t hl = 0;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = i;
+        system->registers[A] = test_value;
+        LD_A_HLI(system);
+        hl = test_address + 1;
+        uint8_t res = i;
+        if ((uint8_t)system->registers[A] == (uint8_t)res && hl == GET_16BIT_REGISTER(HL)) {
+            if (print_all)printf("LD A,[HLI]: %hhu passed\n", test_value);
+        } else {
+            printf("LD A,[HLI]: %hhu %hhu failed\nExpected: %u, HL: %x got: %u, HL: %x\n", i, test_value, res, hl, system->registers[A], GET_16BIT_REGISTER(HL));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_A_HLD(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("LD [HLD],A test:\n");
+    bool failed = false;
+    uint16_t hl = 0;
+
+    for (uint16_t i = 0; i <= 0xFF; i++) {
+        SET_16BIT_REGISTER(HL, test_address);
+        system->memory[test_address] = i;
+        system->registers[A] = test_value;
+        LD_A_HLD(system);
+        hl = test_address - 1;
+        uint8_t res = i;
+        if ((uint8_t)system->registers[A] == (uint8_t)res && hl == GET_16BIT_REGISTER(HL)) {
+            if (print_all)printf("LD [HLI],A: %hhu passed\n", test_value);
+        } else {
+            printf("LD [HLI],A: %hhu %hhu failed\nExpected: %u, HL: %x got: %u, HL: %x\n", i, test_value, res, hl, system->registers[A], GET_16BIT_REGISTER(HL));
             failed = true;
         }
     }
