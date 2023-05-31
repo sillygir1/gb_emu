@@ -19,6 +19,8 @@ bool test_bit(System* system, bool print_all);
 
 bool test_bitshift(System* system, bool print_all);
 
+bool test_jumps_subtoutines(System* system, bool print_all);
+
 bool test_load(System* system, bool print_all);
 
 /* 8-bit arithmetic and logic instructions */
@@ -180,6 +182,22 @@ bool test_LD_HLD_A(System* system, uint8_t test_value, bool print_all);
 bool test_LD_A_HLI(System* system, uint8_t test_value, bool print_all);
 
 bool test_LD_A_HLD(System* system, uint8_t test_value, bool print_all);
+
+/* Jumps and Subroutines */
+
+bool test_JP_HL(System* system, uint16_t test_value, bool print_all);
+
+bool test_JP_n16(System* system, uint16_t test_value, bool print_all);
+
+bool test_JP_cc_n16(System* system, uint16_t test_value, bool print_all);
+
+bool test_JR_n16(System* system, uint16_t test_value, bool print_all);
+
+bool test_JR_cc_n16(System* system, uint16_t test_value, bool print_all);
+
+bool test_RET(System* system, uint16_t test_value, bool print_all);
+
+bool test_RET_cc(System* system, uint16_t test_value, bool print_all);
 
 /* Stack operations instructions */
 

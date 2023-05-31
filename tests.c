@@ -17,9 +17,6 @@ bool test_all(System* system, bool print_all) {
     /* 16-bit instructions*/
     // sum += test_16bit(system, print_all);
 
-    /* Stack operations instructions */
-    sum += test_stack(system, print_all);
-
     /* Bit operations instructions */
     // sum += test_bit(system, print_all);
 
@@ -28,6 +25,12 @@ bool test_all(System* system, bool print_all) {
 
     /* Load instructions */
     // sum += test_load(system, print_all);
+
+    /* Jumps and Subroutines */
+    sum += test_jumps_subtoutines(system, print_all);
+
+    /* Stack operations instructions */
+    // sum += test_stack(system, print_all);
 
     /* Result */
     if (sum) { printf("\nTotal of %hu failed tests.\n", sum); } else { printf("\nTotal:\nNo failures!\n"); }
@@ -137,6 +140,27 @@ bool test_bitshift(System* system, bool print_all) {
     return sum;
 }
 
+bool test_jumps_subtoutines(System* system, bool print_all) {
+    uint16_t sum = 0;
+    /* They are very long too */
+    printf("\nJumps and subroutines instructions test.\n");
+
+    for (uint32_t i = 0; i <= 0xFFFF; i++) {
+        sum += test_JP_HL(system, i, print_all);
+        sum += test_JP_n16(system, i, print_all);
+        sum += test_JP_cc_n16(system, i, print_all);
+        sum += test_JR_n16(system, i, print_all);
+        sum += test_JR_cc_n16(system, i, print_all);
+        sum += test_RET(system, i, print_all);
+        sum += test_RET_cc(system, i, print_all);
+    }
+
+
+    /* Result */
+    if (sum) { printf("\nJumps and subroutines instructions:\nTotal of %hu failed tests.\n", sum); } else { printf("\nJumps and subroutines instructions:\nNo failures!\n"); }
+    return sum;
+}
+
 bool test_load(System* system, bool print_all) {
     uint16_t sum = 0;
     printf("\nLoad instructions test.\n");
@@ -170,7 +194,7 @@ bool test_stack(System* system, bool print_all) {
     /* They are very long too */
     printf("\nStack operations instructions test.\n");
     for (uint32_t i = 0; i <= 0xFFFF; i++) {
-        // sum += test_ADD_HL_SP(system, i, print_all);
+        sum += test_ADD_HL_SP(system, i, print_all);
         sum += test_ADD_SP_e8(system, i, print_all);
         sum += test_DEC_SP(system, i, print_all);
         sum += test_INC_SP(system, i, print_all);
@@ -2513,6 +2537,248 @@ bool test_LD_A_HLD(System* system, uint8_t test_value, bool print_all) {
         return 1;
 }
 
+/* Jumps and Subroutines */
+
+bool test_JP_HL(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("JP [HL] test:\n");
+    bool failed = false;
+
+    SET_16BIT_REGISTER(HL, test_value);
+    JP_HL(system);
+
+    if (GET_16BIT_REGISTER(PC) == test_value) {
+        if (print_all)printf("JP [HL]: %hhu passed\n", test_value);
+    } else {
+        printf("JP [HL]: %hu failed\nExpected: %u got: %u\n", test_value, test_value, GET_16BIT_REGISTER(PC));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_JP_n16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("JP n16 test:\n");
+    bool failed = false;
+
+    JP_n16(system, test_value);
+
+    if (GET_16BIT_REGISTER(PC) == test_value) {
+        if (print_all)printf("JP n16: %hhu passed\n", test_value);
+    } else {
+        printf("JP n16: %hu failed\nExpected: %u got: %u\n", test_value, test_value, GET_16BIT_REGISTER(PC));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_JP_cc_n16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("JP сс,n16 test:\n");
+    bool failed = false;
+    bool zero = false;
+    bool carry = false;
+
+    for (uint8_t i = 0; i < 4; i++) {
+        SET_16BIT_REGISTER(PC, test_uint16);
+        uint16_t res = test_uint16;
+        switch (i) {
+        case NZ:
+            zero = !zero;
+            SET_FLAG(ZERO, zero);
+            if (zero == false) res = test_value;
+            break;
+        case Z:
+            zero = !zero;
+            SET_FLAG(ZERO, zero);
+            if (zero == true) res = test_value;
+            break;
+        case NC:
+            carry = !carry;
+            SET_FLAG(CARRY, carry);
+            if (carry == false) res = test_value;
+            break;
+        case Cc:
+            carry = !carry;
+            SET_FLAG(CARRY, carry);
+            if (carry == true) res = test_value;
+            break;
+        default:
+            printf("WHAT?\n");
+            break;
+        }
+        JP_cc_n16(system, i, test_value);
+
+        if (GET_16BIT_REGISTER(PC) == res) {
+            if (print_all)printf("JP сс,n16: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("JP сс,n16: %hhu %hu failed\nExpected: %u got: %u\n", i, test_value, res, GET_16BIT_REGISTER(PC));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_JR_n16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("JR n16 test:\n");
+    bool failed = false;
+
+    for (int i = -128; i <= 127; i++) {
+        SET_16BIT_REGISTER(PC, test_address);
+        JR_n16(system, i);
+        uint16_t res = test_address + i;
+
+        if (GET_16BIT_REGISTER(PC) == res) {
+            if (print_all)printf("JR n16: %d %hhu passed\n", i, test_value);
+        } else {
+            printf("JR n16: %hu failed\nExpected: %u got: %u\n", test_value, test_value, GET_16BIT_REGISTER(PC));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_JR_cc_n16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("JR cc,n16 test:\n");
+    bool failed = false;
+    bool zero = false;
+    bool carry = false;
+
+    for (int j = -128; j <= 127; j++) {
+        for (uint8_t i = 0; i < 4; i++) {
+            SET_16BIT_REGISTER(PC, test_uint16);
+            uint16_t res = test_uint16;
+            switch (i) {
+            case NZ:
+                zero = !zero;
+                SET_FLAG(ZERO, zero);
+                if (zero == false) res = test_value;
+                break;
+            case Z:
+                zero = !zero;
+                SET_FLAG(ZERO, zero);
+                if (zero == true) res = test_value;
+                break;
+            case NC:
+                carry = !carry;
+                SET_FLAG(CARRY, carry);
+                if (carry == false) res = test_value;
+                break;
+            case Cc:
+                carry = !carry;
+                SET_FLAG(CARRY, carry);
+                if (carry == true) res = test_value;
+                break;
+            default:
+                printf("WHAT?\n");
+                break;
+            }
+            JR_cc_n16(system, i, j);
+
+            if (GET_16BIT_REGISTER(PC) == res) {
+                if (print_all)printf("JR сс,n16: %hhu %hhu passed\n", i, test_value);
+            } else {
+                printf("JR сс,n16: %hhu %hu failed\nExpected: %u got: %u\n", i, test_value, res, GET_16BIT_REGISTER(PC));
+                failed = true;
+            }
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_RET(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("RET test:\n");
+    bool failed = false;
+
+    system->memory[test_address] = test_value & 0xFF;
+    system->memory[test_address + 1] = (test_value & 0xFF00) >> 8;
+    SET_16BIT_REGISTER(SP, test_address);
+    RET(system);
+
+    if (GET_16BIT_REGISTER(PC) == test_value) {
+        if (print_all)printf("RET: %hhu passed\n", test_value);
+    } else {
+        printf("RET: %hu failed\nExpected: %u got: %u\n", test_value, test_value, GET_16BIT_REGISTER(PC));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_RET_cc(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("RET cc test:\n");
+    bool failed = false;
+    bool zero = false;
+    bool carry = false;
+
+    for (uint8_t i = 0; i < 4; i++) {
+        uint16_t res = test_uint16;
+        switch (i) {
+        case NZ:
+            zero = !zero;
+            SET_FLAG(ZERO, zero);
+            if (zero == false) res = test_value;
+            break;
+        case Z:
+            zero = !zero;
+            SET_FLAG(ZERO, zero);
+            if (zero == true) res = test_value;
+            break;
+        case NC:
+            carry = !carry;
+            SET_FLAG(CARRY, carry);
+            if (carry == false) res = test_value;
+            break;
+        case Cc:
+            carry = !carry;
+            SET_FLAG(CARRY, carry);
+            if (carry == true) res = test_value;
+            break;
+        default:
+            printf("WHAT?\n");
+            break;
+        }
+        system->memory[test_address] = test_value & 0xFF;
+        system->memory[test_address + 1] = (test_value & 0xFF00) >> 8;
+        SET_16BIT_REGISTER(PC, test_uint16);
+        SET_16BIT_REGISTER(SP, test_address);
+        RET_cc(system, i);
+
+        if (GET_16BIT_REGISTER(PC) == res) {
+            if (print_all)printf("RET cc: %hhu %hhu passed\n", i, test_value);
+        } else {
+            printf("RET cc: %hhu %hu failed\nExpected: %u got: %u\n", i, test_value, res, GET_16BIT_REGISTER(PC));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+
+}
+
 /* Stack operations instructions */
 
 bool test_ADD_HL_SP(System* system, uint16_t test_value, bool print_all) {
@@ -2732,7 +2998,7 @@ bool test_POP_r16(System* system, uint16_t test_value, bool print_all) {
     if (GET_16BIT_REGISTER(AF) == res) {
         if (print_all)printf("POP r16: %hhu passed\n", test_value);
     } else {
-        printf("POP r16: %hu failed\nExpected: %u got: %u\n", test_value, res, GET_16BIT_REGISTER(SP));
+        printf("POP r16: %hu failed\nExpected: %u got: %u\n", test_value, res, GET_16BIT_REGISTER(AF));
         failed = true;
     }
     if (!failed) {

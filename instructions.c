@@ -598,6 +598,127 @@ void LD_A_HLD(System* system) {
     SET_16BIT_REGISTER(HL, address - 1);
 }
 
+/* Jumps and Subroutines */
+
+void CALL_n16(System* system, uint16_t n16); // TODO
+
+void CALL_cc_n16(System* system, uint8_t condition, uint16_t n16); // TODO
+
+void JP_HL(System* system) {
+    uint16_t address = GET_16BIT_REGISTER(HL);
+    SET_16BIT_REGISTER(PC, address);
+}
+
+void JP_n16(System* system, uint16_t n16) {
+    SET_16BIT_REGISTER(PC, n16);
+}
+
+void JP_cc_n16(System* system, uint8_t condition, uint16_t n16) {
+    switch (condition) {
+    case NZ:
+        if (GET_FLAG(ZERO) != false) {
+            return;
+        }
+        break;
+    case Z:
+        if (GET_FLAG(ZERO) != true) {
+            return;
+        }
+        break;
+    case NC:
+        if (GET_FLAG(CARRY) != false) {
+            return;
+        }
+        break;
+    case Cc:
+        if (GET_FLAG(CARRY) != true) {
+            return;
+        }
+        break;
+    default:
+        // WHY?
+        return;
+    }
+    SET_16BIT_REGISTER(PC, n16);
+}
+
+void JR_n16(System* system, char e8) {
+    uint16_t address = GET_16BIT_REGISTER(PC) + e8;
+    SET_16BIT_REGISTER(PC, address);
+}
+
+void JR_cc_n16(System* system, uint8_t condition, char e8) {
+    uint16_t address = GET_16BIT_REGISTER(PC) + e8;
+    switch (condition) {
+    case NZ:
+        if (GET_FLAG(ZERO) == false) {
+            SET_16BIT_REGISTER(PC, address);
+        }
+        break;
+    case Z:
+        if (GET_FLAG(ZERO) == true) {
+            SET_16BIT_REGISTER(PC, address);
+        }
+        break;
+    case NC:
+        if (GET_FLAG(CARRY) == false) {
+            SET_16BIT_REGISTER(PC, address);
+        }
+        break;
+    case Cc:
+        if (GET_FLAG(CARRY) == true) {
+            SET_16BIT_REGISTER(PC, address);
+        }
+        break;
+    default:
+        // WHY?
+        return;
+    }
+}
+
+void RET(System* system) {
+    uint16_t sp = GET_16BIT_REGISTER(SP);
+    uint16_t pc = system->memory[sp++] + (system->memory[sp++] << 8);
+    SET_16BIT_REGISTER(SP, sp);
+    SET_16BIT_REGISTER(PC, pc);
+}
+
+void RET_cc(System* system, uint8_t condition) {
+    switch (condition) {
+    case NZ:
+        if (GET_FLAG(ZERO) != false) {
+            return;
+        }
+        break;
+    case Z:
+        if (GET_FLAG(ZERO) != true) {
+            return;
+        }
+        break;
+    case NC:
+        if (GET_FLAG(CARRY) != false) {
+            return;
+        }
+        break;
+    case Cc:
+        if (GET_FLAG(CARRY) != true) {
+            return;
+        }
+        break;
+    default:
+        // WHY?
+        return;
+    }
+    uint16_t sp = GET_16BIT_REGISTER(sp);
+    uint16_t pc = system->memory[sp++] + (system->memory[sp++] << 8);
+    SET_16BIT_REGISTER(SP, sp);
+    SET_16BIT_REGISTER(PC, pc);
+}
+
+void RETI(System* system); // TODO
+
+void RST_vec(System* system); // TODO
+
 /* Stack operations instructions */
 
 void ADD_HL_SP(System* system) {

@@ -367,6 +367,62 @@ void LD_A_HLI(System* system);
 /// @param system 
 void LD_A_HLD(System* system);
 
+/* Jumps and Subroutines */
+
+/// @brief Call address n16.
+/// @param system 
+/// @param n16 
+void CALL_n16(System* system, uint16_t n16);
+
+/// @brief Call address n16 if condition cc is met.
+/// @param system 
+/// @param condition 
+/// @param n16 
+void CALL_cc_n16(System* system, uint8_t condition, uint16_t n16);
+
+/// @brief Jump to address in HL.
+/// @param system 
+void JP_HL(System* system);
+
+/// @brief Jump to address n16.
+/// @param system 
+/// @param n16 
+void JP_n16(System* system, uint16_t n16);
+
+/// @brief Jump to address n16 if condition cc is met.
+/// @param system 
+/// @param condition 
+/// @param n16 
+void JP_cc_n16(System* system, uint8_t condition, uint16_t n16);
+
+/// @brief Relative Jump to address n16.
+/// @param system 
+/// @param e8 
+void JR_n16(System* system, char e8);
+
+/// @brief Relative Jump to address n16 if condition cc is met.
+/// @param system 
+/// @param condition 
+/// @param e8 
+void JR_cc_n16(System* system, uint8_t condition, char e8);
+
+/// @brief Return from subroutine.
+/// @param system 
+void RET(System* system);
+
+/// @brief Return from subroutine if condition cc is met.
+/// @param system 
+/// @param condition
+void RET_cc(System* system, uint8_t condition);
+
+/// @brief Return from subroutine and enable interrupts.
+/// @param system 
+void RETI(System* system);
+
+/// @brief Call address vec.
+/// @param system 
+void RST_vec(System* system);
+
 /* Stack operations instructions */
 
 /// @brief Add the value in SP to HL.

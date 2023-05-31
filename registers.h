@@ -30,6 +30,13 @@ typedef enum {
     ZERO,
 }Flags;
 
+typedef enum {
+    NZ,
+    Z,
+    NC,
+    Cc, // C condition, C is already used for registers
+}Condition;
+
 // Registers
 typedef enum {
     A,
