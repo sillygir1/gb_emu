@@ -3,6 +3,9 @@
 uint16_t get_GPR16bit(uint8_t registers[], uint8_t reg) {
     uint16_t ret = 0;
     switch (reg) {
+    case AF:
+        ret = (registers[A] << 8) + registers[F];
+        break;
     case BC:
         ret = (registers[B] << 8) + registers[C];
         break;
@@ -28,6 +31,9 @@ uint16_t get_GPR16bit(uint8_t registers[], uint8_t reg) {
 
 void put_GPR16bit(uint8_t registers[], uint8_t reg, uint16_t value) {
     switch (reg) {
+    case AF:
+        registers[A] = (value & 0xFF00) >> 8;
+        registers[F] = value & 0x00FF;
     case BC:
         registers[B] = (value & 0xFF00) >> 8;
         registers[C] = value & 0x00FF;

@@ -24,11 +24,7 @@ typedef enum {
 
 // Flags
 typedef enum {
-    NONE1,
-    NONE2,
-    NONE3,
-    NONE4,
-    CARRY,
+    CARRY = 4,
     HALFCARRY,
     SUB, // Also known as N
     ZERO,

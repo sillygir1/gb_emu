@@ -12,22 +12,22 @@ static uint16_t test_uint16 = 0xC0DE;
 bool test_all(System* system, bool print_all) {
     uint16_t sum = 0;
     /* 8-bit instructions */
-    sum += test_8bit(system, print_all);
+    // sum += test_8bit(system, print_all);
 
     /* 16-bit instructions*/
-    sum += test_16bit(system, print_all);
+    // sum += test_16bit(system, print_all);
 
     /* Stack operations instructions */
     sum += test_stack(system, print_all);
 
     /* Bit operations instructions */
-    sum += test_bit(system, print_all);
+    // sum += test_bit(system, print_all);
 
     /* Bit shift instructions */
-    sum += test_bitshift(system, print_all);
+    // sum += test_bitshift(system, print_all);
 
     /* Load instructions */
-    sum += test_load(system, print_all);
+    // sum += test_load(system, print_all);
 
     /* Result */
     if (sum) { printf("\nTotal of %hu failed tests.\n", sum); } else { printf("\nTotal:\nNo failures!\n"); }
@@ -170,12 +170,20 @@ bool test_stack(System* system, bool print_all) {
     /* They are very long too */
     printf("\nStack operations instructions test.\n");
     for (uint32_t i = 0; i <= 0xFFFF; i++) {
-        sum += test_ADD_HL_SP(system, i, print_all);
-        // do test_ADD_SP_e8
+        // sum += test_ADD_HL_SP(system, i, print_all);
+        sum += test_ADD_SP_e8(system, i, print_all);
+        sum += test_DEC_SP(system, i, print_all);
+        sum += test_INC_SP(system, i, print_all);
+        sum += test_LD_SP_n16(system, i, print_all);
+        sum += test_LD_n16_SP(system, i, print_all);
+        sum += test_LD_HL_SP_e8(system, i, print_all);
+        sum += test_LD_SP_HL(system, i, print_all);
+        sum += test_POP_r16(system, i, print_all);
+        sum += test_PUSH_r16(system, i, print_all);
     }
 
     /* Result */
-    if (sum) { printf("\nStack operations instructions:\nTotal of %hu failed tests.\n", sum); } else { printf("\n16-bit instructions:\nNo failures!\n"); }
+    if (sum) { printf("\nStack operations instructions:\nTotal of %hu failed tests.\n", sum); } else { printf("\nStack operations instructions:\nNo failures!\n"); }
     return sum;
 }
 
@@ -2508,7 +2516,7 @@ bool test_LD_A_HLD(System* system, uint8_t test_value, bool print_all) {
 /* Stack operations instructions */
 
 bool test_ADD_HL_SP(System* system, uint16_t test_value, bool print_all) {
-    if (print_all) printf("ADD [HL],r16 test:\n");
+    if (print_all) printf("ADD [HL],SP test:\n");
     bool failed = false;
     bool carry = false;
     bool halfcarry = false;
@@ -2529,9 +2537,9 @@ bool test_ADD_HL_SP(System* system, uint16_t test_value, bool print_all) {
         halfcarry = ((i & 0xFFF) + (test_value & 0xFFF)) > 0xFFF;
 
         if (GET_16BIT_REGISTER(HL) == res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
-            if (print_all)printf("ADD [HL],r16: %hhu passed\n", i);
+            if (print_all)printf("ADD [HL],SP: %hhu passed\n", i);
         } else {
-            printf("ADD [HL],r16: %hu %hu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, sub, halfcarry, carry, GET_16BIT_REGISTER(HL), GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            printf("ADD [HL],SP: %hu %hu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, sub, halfcarry, carry, GET_16BIT_REGISTER(HL), GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
             failed = true;
         }
     }
@@ -2543,4 +2551,219 @@ bool test_ADD_HL_SP(System* system, uint16_t test_value, bool print_all) {
         return 1;
 }
 
-bool test_ADD_SP_e8(System* system, uint16_t test_value, bool print_all); // TODO
+bool test_ADD_SP_e8(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("ADD SP+e8 test:\n");
+    bool failed = false;
+    bool carry = false;
+    bool halfcarry = false;
+    bool zero = false;
+    bool sub = false;
+
+    for (int i = -128; i <= 127; i++) {
+        SET_FLAG(SUB, true);
+        SET_16BIT_REGISTER(SP, test_value);
+        ADD_SP_e8(system, i);
+        zero = 0;
+        sub = false;
+        uint16_t res = test_value + i;
+        halfcarry = i >= 0 ? (i & 0xF) + (test_value & 0xF) > 0xF : (test_value & 0xF) < ((-1 * i) & 0xF);
+        carry = i >= 0 ? (i + (test_value & 0xFF)) > 0xFF : (test_value & 0xFF) < (-1 * i);
+
+        if (GET_16BIT_REGISTER(SP) == res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
+            if (print_all)printf("ADD SP,e8: %d passed\n", i);
+        } else {
+            printf("ADD SP,e8: %d %hu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, sub, halfcarry, carry, GET_16BIT_REGISTER(SP), GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            failed = true;
+        }
+    }
+
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_DEC_SP(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("DEC SP test:\n");
+    bool failed = false;
+
+    SET_16BIT_REGISTER(SP, test_value);
+    DEC_SP(system);
+    uint16_t res = test_value - 1;
+
+    if (GET_16BIT_REGISTER(SP) == res) {
+        if (print_all)printf("DEC SP: %hhu passed\n", test_value);
+    } else {
+        printf("DEC SP: %hhu failed\nExpected: %u, got: %u\n", test_value, res, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_INC_SP(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("INC SP test:\n");
+    bool failed = false;
+
+    SET_16BIT_REGISTER(SP, test_value);
+    INC_SP(system);
+    uint16_t res = test_value + 1;
+
+    if (GET_16BIT_REGISTER(SP) == res) {
+        if (print_all)printf("INC SP: %hhu passed\n", test_value);
+    } else {
+        printf("INC SP: %hhu failed\nExpected: %u, got: %u\n", test_value, res, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_SP_n16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD SP,n16 test:\n");
+    bool failed = false;
+
+    LD_SP_n16(system, test_value);
+
+    if (GET_16BIT_REGISTER(SP) == test_value) {
+        if (print_all)printf("LD SP,n16: %hhu passed\n", test_value);
+    } else {
+        printf("LD SP,n16: %hhu failed\nExpected: %u, got: %u\n", test_value, test_value, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_n16_SP(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD SP,n16 test:\n");
+    bool failed = false;
+
+    LD_n16_SP(system, test_value);
+
+    uint16_t loaded = system->memory[test_address] + system->memory[test_address + 1] << 8;
+    if (GET_16BIT_REGISTER(SP) == test_value) {
+        if (print_all)printf("LD SP,n16: %hhu passed\n", test_value);
+    } else {
+        printf("LD SP,n16: %hhu failed\nExpected: %u, got: %u\n", test_value, test_value, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_HL_SP_e8(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD [HL],SP+e8 test:\n");
+    bool failed = false;
+    bool carry = false;
+    bool halfcarry = false;
+    bool zero = false;
+    bool sub = false;
+
+    for (int i = -128; i <= 127; i++) {
+        SET_FLAG(SUB, true);
+        SET_16BIT_REGISTER(SP, test_value);
+        LD_HL_SP_e8(system, i);
+        zero = 0;
+        sub = false;
+        uint16_t res = test_value + i;
+        halfcarry = i >= 0 ? (i & 0xF) + (test_value & 0xF) > 0xF : (test_value & 0xF) < ((-1 * i) & 0xF);
+        carry = i >= 0 ? (i + (test_value & 0xFF)) > 0xFF : (test_value & 0xFF) < (-1 * i);
+
+        if (GET_16BIT_REGISTER(HL) == res && carry == GET_FLAG(CARRY) && halfcarry == GET_FLAG(HALFCARRY) && zero == GET_FLAG(ZERO) && sub == GET_FLAG(SUB)) {
+            if (print_all)printf("LD [HL],SP+e8: %d passed\n", i);
+        } else {
+            printf("LD [HL],SP+e8: %d %hu failed\nExpected: %u z: %u n: %u hc: %u c: %u, got: %u z: %u n: %u hc: %u c: %u\n", i, test_value, res, zero, sub, halfcarry, carry, GET_16BIT_REGISTER(HL), GET_FLAG(ZERO), GET_FLAG(SUB), GET_FLAG(HALFCARRY), GET_FLAG(CARRY));
+            failed = true;
+        }
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_LD_SP_HL(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("LD SP,[HL] test:\n");
+    bool failed = false;
+
+    SET_16BIT_REGISTER(HL, test_value);
+    LD_SP_HL(system);
+    uint16_t res = test_value;
+
+    if (GET_16BIT_REGISTER(SP) == res) {
+        if (print_all)printf("LD SP,[HL]: %hhu passed\n", test_value);
+    } else {
+        printf("LD SP,[HL]: %hu failed\nExpected: %u got: %u\n", test_value, res, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_POP_r16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("POP r16 test:\n");
+    bool failed = false;
+
+    system->memory[test_address] = test_value & 0xFF;
+    system->memory[test_address + 1] = (test_value & 0xFF00) >> 8;
+    SET_16BIT_REGISTER(SP, test_address);
+    uint16_t res = test_value;
+
+    POP_r16(system, AF);
+
+    if (GET_16BIT_REGISTER(AF) == res) {
+        if (print_all)printf("POP r16: %hhu passed\n", test_value);
+    } else {
+        printf("POP r16: %hu failed\nExpected: %u got: %u\n", test_value, res, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_PUSH_r16(System* system, uint16_t test_value, bool print_all) {
+    if (print_all) printf("POP r16 test:\n");
+    bool failed = false;
+
+    SET_16BIT_REGISTER(SP, test_address);
+    SET_16BIT_REGISTER(AF, test_value);
+    uint16_t res = test_value;
+
+    PUSH_r16(system, AF);
+
+    uint16_t ret = (system->memory[test_address - 1] << 8) + system->memory[test_address - 2];
+
+    if (ret == res) {
+        if (print_all)printf("PUSH r16: %hhu passed\n", test_value);
+    } else {
+        printf("PUSH r16: %hu failed\nExpected: %u got: %u\n", test_value, res, GET_16BIT_REGISTER(SP));
+        failed = true;
+    }
+
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}

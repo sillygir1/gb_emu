@@ -376,4 +376,41 @@ void ADD_HL_SP(System* system);
 /// @brief Add the signed value e8 to SP.
 /// @param system System struct
 /// @param e8 Signed value
-void ADD_SP_e8(System* system, uint8_t e8);
+void ADD_SP_e8(System* system, char e8);
+
+/// @brief Decrement value in register SP by 1.
+/// @param system 
+void DEC_SP(System* system);
+
+/// @brief Increment value in register SP by 1.
+/// @param system 
+void INC_SP(System* system);
+
+/// @brief Load value n16 into register SP.
+/// @param system 
+/// @param n16 
+void LD_SP_n16(System* system, uint16_t n16);
+
+/// @brief Store SP & $FF at address n16 and SP >> 8 at address n16 + 1.
+/// @param system 
+/// @param n16 
+void LD_n16_SP(System* system, uint16_t n16);
+
+/// @brief Add the signed value e8 to SP and store the result in HL.
+/// @param system 
+/// @param e8 
+void LD_HL_SP_e8(System* system, char e8);
+
+/// @brief Load register HL into register SP.
+/// @param system 
+void LD_SP_HL(System* system);
+
+/// @brief Pop register r16 from the stack.
+/// @param system 
+/// @param r16 
+void POP_r16(System* system, uint8_t r16);
+
+/// @brief Push register r16 into the stack.
+/// @param system 
+/// @param r16 
+void PUSH_r16(System* system, uint8_t r16);

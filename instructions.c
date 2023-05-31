@@ -95,6 +95,14 @@ void static BITSHIFT_flags(System* system, uint8_t result, bool carry) {
     SET_FLAG(CARRY, carry);
 }
 
+void static SP_e8_flags(System* system, uint16_t sp, char e8) {
+    SET_FLAG(ZERO, false);
+    SET_FLAG(SUB, false);
+    bool hc = e8 >= 0 ? (sp & 0xF) + (e8 & 0xF) > 0xF : (sp & 0xF) < ((-1 * e8) & 0xF);
+    SET_FLAG(HALFCARRY, hc);
+    bool c = e8 >= 0 ? (sp & 0xFF) + (e8) > 0xFF : (sp & 0xFF) < ((-1 * e8));
+    SET_FLAG(CARRY, c);
+}
 /* 8-bit arithmetic and logic instructions */
 
 void ADC_A_r8(System* system, uint8_t r8) {
@@ -596,8 +604,97 @@ void ADD_HL_SP(System* system) {
     uint16_t result = GET_16BIT_REGISTER(HL) + GET_16BIT_REGISTER(SP);
     ADD_HL_flags(system, GET_16BIT_REGISTER(HL), GET_16BIT_REGISTER(SP));
     SET_16BIT_REGISTER(HL, result);
+} // tested?
+
+void ADD_SP_e8(System* system, char e8) {
+    uint16_t sp = GET_16BIT_REGISTER(SP);
+    uint16_t result = sp + e8;
+    SP_e8_flags(system, sp, e8);
+    SET_16BIT_REGISTER(SP, result);
+} // not tested
+
+void DEC_SP(System* system) {
+    uint16_t result = GET_16BIT_REGISTER(SP) - 1;
+    SET_16BIT_REGISTER(SP, result);
 }
 
-void ADD_SP_e8(System* system, uint8_t e8) {
-    // TODO
+void INC_SP(System* system) {
+    uint16_t result = GET_16BIT_REGISTER(SP) + 1;
+    SET_16BIT_REGISTER(SP, result);
+}
+
+void LD_SP_n16(System* system, uint16_t n16) {
+    SET_16BIT_REGISTER(SP, n16);
+}
+
+void LD_n16_SP(System* system, uint16_t n16) {
+    uint16_t sp = GET_16BIT_REGISTER(SP);
+    system->memory[n16] = sp & 0xFF;
+    system->memory[n16 + 1] = sp >> 8;
+}
+
+void LD_HL_SP_e8(System* system, char e8) {
+    uint16_t sp = GET_16BIT_REGISTER(SP);
+    uint16_t result = sp + e8;
+    SP_e8_flags(system, sp, e8);
+    SET_16BIT_REGISTER(HL, result);
+}
+
+void LD_SP_HL(System* system) {
+    uint16_t hl = GET_16BIT_REGISTER(HL);
+    SET_16BIT_REGISTER(SP, hl);
+}
+
+void POP_r16(System* system, uint8_t r16) {
+    // Only used to load BC, DE and HL
+    uint16_t sp = GET_16BIT_REGISTER(SP);
+    switch (r16) {
+    case AF:
+        system->registers[F] = system->memory[sp++];
+        system->registers[A] = system->memory[sp++];
+        break;
+    case BC:
+        system->registers[C] = system->memory[sp++];
+        system->registers[B] = system->memory[sp++];
+        break;
+    case DE:
+        system->registers[E] = system->memory[sp++];
+        system->registers[D] = system->memory[sp++];
+        break;
+    case HL:
+        system->registers[L] = system->memory[sp++];
+        system->registers[H] = system->memory[sp++];
+        break;
+    default:
+        // WHAT?
+        return;
+    }
+    SET_16BIT_REGISTER(SP, sp);
+}
+
+void PUSH_r16(System* system, uint8_t r16) {
+    uint16_t sp = GET_16BIT_REGISTER(SP);
+    switch (r16) {
+    case AF:
+        system->memory[--sp] = system->registers[A];
+        system->memory[--sp] = system->registers[F];
+        break;
+    case BC:
+        system->memory[--sp] = system->registers[B];
+        system->memory[--sp] = system->registers[C];
+        break;
+    case DE:
+        system->memory[--sp] = system->registers[D];
+        system->memory[--sp] = system->registers[E];
+        break;
+    case HL:
+        system->memory[--sp] = system->registers[H];
+        system->memory[--sp] = system->registers[L];
+        break;
+    default:
+        // HOW?
+        return;
+    }
+
+    SET_16BIT_REGISTER(SP, sp);
 }

@@ -186,3 +186,19 @@ bool test_LD_A_HLD(System* system, uint8_t test_value, bool print_all);
 bool test_ADD_HL_SP(System* system, uint16_t test_value, bool print_all);
 
 bool test_ADD_SP_e8(System* system, uint16_t test_value, bool print_all);
+
+bool test_DEC_SP(System* system, uint16_t test_value, bool print_all);
+
+bool test_INC_SP(System* system, uint16_t test_value, bool print_all);
+
+bool test_LD_SP_n16(System* system, uint16_t test_value, bool print_all);
+
+bool test_LD_n16_SP(System* system, uint16_t test_value, bool print_all);
+
+bool test_LD_HL_SP_e8(System* system, uint16_t test_value, bool print_all);
+
+bool test_LD_SP_HL(System* system, uint16_t test_value, bool print_all);
+
+bool test_POP_r16(System* system, uint16_t test_value, bool print_all);
+
+bool test_PUSH_r16(System* system, uint16_t test_value, bool print_all);
