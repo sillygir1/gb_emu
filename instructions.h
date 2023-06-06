@@ -470,3 +470,41 @@ void POP_r16(System* system, uint8_t r16);
 /// @param system 
 /// @param r16 
 void PUSH_r16(System* system, uint8_t r16);
+
+/* Miscellaneous Instructions */
+
+/// @brief Complement carry flag
+/// @param system 
+void CCF(System* system);
+
+/// @brief Complement accumulator (A register)
+/// @param system 
+void CPL(System* system);
+
+/// @brief Decimal Adjust Accumulator to get a correct BCD representation after an arithmetic instruction.
+/// @param system 
+void DAA(System* system);
+
+/// @brief Disable Interrupts by clearing the IME flag.
+/// @param system 
+void DI(System* system);
+
+/// @brief Enable Interrupts by setting the IME flag.
+/// @param system 
+void EI(System* system);
+
+/// @brief Enter CPU low-power consumption mode until an interrupt occurs.
+/// @param system 
+void HALT(System* system);
+
+/// @brief Do nothing
+/// @param system 
+void NOP(System* system);
+
+/// @brief Set Carry Flag.
+/// @param system 
+void SCF(System* system);
+
+/// @brief Enter CPU very low power mode.
+/// @param system 
+void STOP(System* system);

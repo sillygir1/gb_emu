@@ -27,10 +27,13 @@ bool test_all(System* system, bool print_all) {
     // sum += test_load(system, print_all);
 
     /* Jumps and Subroutines */
-    sum += test_jumps_subtoutines(system, print_all);
+    // sum += test_jumps_subtoutines(system, print_all);
 
     /* Stack operations instructions */
     // sum += test_stack(system, print_all);
+
+    /* Miscellaneous Instructions */
+    test_misc(system, print_all);
 
     /* Result */
     if (sum) { printf("\nTotal of %hu failed tests.\n", sum); } else { printf("\nTotal:\nNo failures!\n"); }
@@ -142,7 +145,6 @@ bool test_bitshift(System* system, bool print_all) {
 
 bool test_jumps_subtoutines(System* system, bool print_all) {
     uint16_t sum = 0;
-    /* They are very long too */
     printf("\nJumps and subroutines instructions test.\n");
 
     for (uint32_t i = 0; i <= 0xFFFF; i++) {
@@ -191,7 +193,7 @@ bool test_load(System* system, bool print_all) {
 
 bool test_stack(System* system, bool print_all) {
     uint16_t sum = 0;
-    /* They are very long too */
+    /* They are somewhat long too */
     printf("\nStack operations instructions test.\n");
     for (uint32_t i = 0; i <= 0xFFFF; i++) {
         sum += test_ADD_HL_SP(system, i, print_all);
@@ -211,6 +213,19 @@ bool test_stack(System* system, bool print_all) {
     return sum;
 }
 
+bool test_misc(System* system, bool print_all) {
+    uint16_t sum = 0;
+    printf("\nMiscellaneous instructions test.\n");
+
+    sum += test_CCF(system, print_all);
+    sum += test_CPL(system, test_uint8, print_all);
+    // I refuse to write a test for DAA
+
+
+    /* Result */
+    if (sum) { printf("\nMiscellaneous instructions:\nTotal of %hu failed tests.\n", sum); } else { printf("\nMiscellaneous instructions:\nNo failures!\n"); }
+    return sum;
+}
 /* 8-bit arithmetic and logic instructions */
 
 bool test_ADC_A_r8(System* system, uint8_t test_value, bool print_all) {
@@ -3033,3 +3048,48 @@ bool test_PUSH_r16(System* system, uint16_t test_value, bool print_all) {
     } else
         return 1;
 }
+
+/* Miscellaneous Instructions */
+
+bool test_CCF(System* system, bool print_all) {
+    if (print_all) printf("CCF test:\n");
+    bool failed = false;
+
+    bool carry = !GET_FLAG(CARRY);
+    CCF(system);
+
+    if (GET_FLAG(CARRY) == carry && GET_FLAG(SUB) == 0 && GET_FLAG(HALFCARRY) == 0) {
+        if (print_all)printf("CCF: passed\n");
+    } else {
+        printf("CCF: failed\nExpected: c: %u h: %u n: %u got: c: %u h: %u n: %u\n", carry, 0, 0, GET_FLAG(CARRY), GET_FLAG(HALFCARRY), GET_FLAG(SUB));
+        failed = true;
+    }
+
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+
+bool test_CPL(System* system, uint8_t test_value, bool print_all) {
+    if (print_all) printf("CPL test:\n");
+    bool failed = false;
+
+    uint8_t res = ~system->registers[A];
+    CPL(system);
+
+    if (system->registers[A] == res && GET_FLAG(SUB) == 1 && GET_FLAG(HALFCARRY) == 1) {
+        if (print_all)printf("CPL: passed\n");
+    } else {
+        printf("CPL: failed\nExpected: A: %hhu h: %u n: %u got: A: %hhu h: %u n: %u\n", res, 1, 1, system->registers[A], GET_FLAG(HALFCARRY), GET_FLAG(SUB));
+        failed = true;
+    }
+
+    if (!failed) {
+        if (print_all) printf("Success!\n");
+        return 0;
+    } else
+        return 1;
+}
+

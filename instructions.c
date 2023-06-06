@@ -819,3 +819,52 @@ void PUSH_r16(System* system, uint8_t r16) {
 
     SET_16BIT_REGISTER(SP, sp);
 }
+
+/* Miscellaneous Instructions */
+
+void CCF(System* system) {
+    bool c = GET_FLAG(CARRY);
+    SET_FLAG(CARRY, !c);
+    SET_FLAG(HALFCARRY, false);
+    SET_FLAG(SUB, false);
+}
+
+void CPL(System* system) {
+    uint8_t a = system->registers[A];
+    system->registers[A] = ~a;
+    SET_FLAG(HALFCARRY, true);
+    SET_FLAG(SUB, true);
+}
+
+void DAA(System* system) {
+    // Thanks a lot to u/Pattern_Key, this is based on their implementation
+    bool n = GET_FLAG(SUB);
+    bool c = GET_FLAG(CARRY);
+    bool h = GET_FLAG(HALFCARRY);
+    if (n) {
+        if (c) system->registers[A] -= 0x60;
+        if (h) system->registers[A] -= 0x6;
+    } else {
+        if (c || system->registers[A] > 0x99) {
+            system->registers[A] += 0x60;
+            SET_FLAG(CARRY, true);
+        }
+        if (h || (system->registers[A] & 0xF) > 0x9) system->registers[A] += 0x6;
+    }
+}
+
+void DI(System* system) {
+    system->IME = false;
+}
+
+void EI(System* system);
+
+void HALT(System* system);
+
+void NOP(System* system) {
+    // Literally doing nothing
+}
+
+void SCF(System* system);
+
+void STOP(System* system);

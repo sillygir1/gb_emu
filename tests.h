@@ -23,6 +23,9 @@ bool test_jumps_subtoutines(System* system, bool print_all);
 
 bool test_load(System* system, bool print_all);
 
+bool test_misc(System* system, bool print_all);
+
+
 /* 8-bit arithmetic and logic instructions */
 
 bool test_ADC_A_r8(System* system, uint8_t test_value, bool print_all);
@@ -220,3 +223,9 @@ bool test_LD_SP_HL(System* system, uint16_t test_value, bool print_all);
 bool test_POP_r16(System* system, uint16_t test_value, bool print_all);
 
 bool test_PUSH_r16(System* system, uint16_t test_value, bool print_all);
+
+/* Miscellaneous Instructions */
+
+bool test_CCF(System* system, bool print_all);
+
+bool test_CPL(System* system, uint8_t test_value, bool print_all);
