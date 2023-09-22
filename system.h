@@ -21,3 +21,9 @@ typedef struct {
 } System;
 
 bool worker(System *system);
+
+void close(System *system, uint8_t code);
+
+void load_rom(System *system, char path[]);
+
+void execute_instruction(System *system);

@@ -796,7 +796,7 @@ void POP_r16(System *system, uint8_t r16) {
 	uint16_t sp = GET_16BIT_REGISTER(SP);
 	switch (r16) {
 	case AF:
-		system->registers[F] = system->memory[sp++];
+		system->registers[F] = system->memory[sp++]; // Flags register
 		system->registers[A] = system->memory[sp++];
 		break;
 	case BC:
@@ -888,7 +888,7 @@ void EI(System *system);
 void HALT(System *system);
 
 void NOP(System *system) {
-	// Literally doing nothing
+	// Literally do nothing but waste a cpu cycle or something
 }
 
 void SCF(System *system);
