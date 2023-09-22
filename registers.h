@@ -10,43 +10,43 @@
 #define GET_ALL_FLAGS() get_all_flags(system->registers)
 #define GET_16BIT_REGISTER(REGISTER) get_GPR16bit(system->registers, REGISTER)
 #define SET_16BIT_REGISTER(REGISTER, VALUE)                                    \
-  put_GPR16bit(system->registers, REGISTER, VALUE)
+	put_GPR16bit(system->registers, REGISTER, VALUE)
 
 // 16-bit registers
 typedef enum {
-  AF,
-  BC,
-  DE,
-  HL,
-  SP,
-  PC,
+	AF,
+	BC,
+	DE,
+	HL,
+	SP,
+	PC,
 } DoubleRegisters;
 
 // Flags
 typedef enum {
-  CARRY = 4,
-  HALFCARRY,
-  SUB, // Also known as N
-  ZERO,
+	CARRY = 4,
+	HALFCARRY,
+	SUB, // Also known as N
+	ZERO,
 } Flags;
 
 typedef enum {
-  NZ,
-  Z,
-  NC,
-  Cc, // C condition, C is already used for registers
+	NZ,
+	Z,
+	NC,
+	Cc, // C condition, C is already used for registers
 } Condition;
 
 // Registers
 typedef enum {
-  A,
-  F,
-  B,
-  C,
-  D,
-  E,
-  H,
-  L,
+	A,
+	F,
+	B,
+	C,
+	D,
+	E,
+	H,
+	L,
 } Registers;
 
 // Get 16-bit registers or something idk

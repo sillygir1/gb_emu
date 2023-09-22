@@ -1,4 +1,4 @@
-all: gb_emu
+all: compile_all gb_emu
 
 debug:
 	# debug with tests and debug stuff ig
@@ -6,7 +6,9 @@ debug:
 make_dir:
 	mkdir -p out
 
-gb_emu: make_dir main.o instructions.o registers.o system.o
+compile_all: make_dir main.o instructions.o registers.o system.o graphics.o
+
+gb_emu: 
 	gcc out/main.o out/instructions.o out/registers.o out/system.o `sdl2-config --cflags --libs` -o out/binary
 
 main.o:
@@ -20,6 +22,9 @@ registers.o:
 
 system.o:
 	gcc system.c -c -o out/system.o
+
+graphics.o:
+	gcc graphics.c -c -o out/graphics.o
 
 tests.o:
 	gcc tests.c -c -o out/tests.o
