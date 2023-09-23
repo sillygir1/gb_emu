@@ -4,6 +4,10 @@
 #include "registers.h"
 #include "system.h"
 
+// When the duration is not defined from the start
+// (for conditional functions)
+#define ND 0xFE
+
 /* 8-bit arithmetic and logic instructions */
 
 /// @brief Add the value in r8 plus the carry flag to A.
@@ -517,3 +521,13 @@ void SCF(System *system);
 /// @brief Enter CPU very low power mode.
 /// @param system
 void STOP(System *system);
+
+/// @brief Get instruction's length in bytes
+/// @param instruction instruction
+/// @return lenght in bytes
+void get_instruction_length(System *system);
+
+/// @brief Get instruction's duration
+/// @param instruction instruction
+/// @return duration in system clock ticks
+void get_instruction_duration(System *system);

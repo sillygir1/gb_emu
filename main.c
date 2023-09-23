@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
 	System *system = malloc(sizeof(*system));
 	memset(system->memory, 0, sizeof(system->memory));
 	memset(system->registers, 0, sizeof(system->registers));
+
 	if (argc > 1) {
 		load_rom(system, argv[1]);
 	} else {

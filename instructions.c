@@ -643,22 +643,26 @@ void JP_n16(System *system, uint16_t n16) { SET_16BIT_REGISTER(PC, n16); }
 void JP_cc_n16(System *system, uint8_t condition, uint16_t n16) {
 	switch (condition) {
 	case NZ:
-		if (GET_FLAG(ZERO) != false) {
+		if (GET_FLAG(ZERO) == true) {
+			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
 	case Z:
-		if (GET_FLAG(ZERO) != true) {
+		if (GET_FLAG(ZERO) == false) {
+			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
 	case NC:
-		if (GET_FLAG(CARRY) != false) {
+		if (GET_FLAG(CARRY) == true) {
+			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
 	case Cc:
-		if (GET_FLAG(CARRY) != true) {
+		if (GET_FLAG(CARRY) == false) {
+			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
@@ -666,41 +670,48 @@ void JP_cc_n16(System *system, uint8_t condition, uint16_t n16) {
 		// WHY?
 		return;
 	}
+	system->current_instruction_duration = 16;
 	SET_16BIT_REGISTER(PC, n16);
 }
 
 void JR_n16(System *system, char e8) {
-	uint16_t address = GET_16BIT_REGISTER(PC) + e8;
+	uint16_t address = GET_16BIT_REGISTER(PC) + e8 + 2;
 	SET_16BIT_REGISTER(PC, address);
 }
 
 void JR_cc_n16(System *system, uint8_t condition, char e8) {
-	uint16_t address = GET_16BIT_REGISTER(PC) + e8;
+	uint16_t address = GET_16BIT_REGISTER(PC) + e8 + 2;
+	bool taken = false;
 	switch (condition) {
 	case NZ:
 		if (GET_FLAG(ZERO) == false) {
 			SET_16BIT_REGISTER(PC, address);
+			taken = true;
 		}
 		break;
 	case Z:
 		if (GET_FLAG(ZERO) == true) {
 			SET_16BIT_REGISTER(PC, address);
+			taken = true;
 		}
 		break;
 	case NC:
 		if (GET_FLAG(CARRY) == false) {
 			SET_16BIT_REGISTER(PC, address);
+			taken = true;
 		}
 		break;
 	case Cc:
 		if (GET_FLAG(CARRY) == true) {
 			SET_16BIT_REGISTER(PC, address);
+			taken = true;
 		}
 		break;
 	default:
 		// WHY?
 		return;
 	}
+	system->current_instruction_duration = taken ? 12 : 8;
 }
 
 void RET(System *system) {
@@ -713,22 +724,26 @@ void RET(System *system) {
 void RET_cc(System *system, uint8_t condition) {
 	switch (condition) {
 	case NZ:
-		if (GET_FLAG(ZERO) != false) {
+		if (GET_FLAG(ZERO) == true) {
+			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
 	case Z:
-		if (GET_FLAG(ZERO) != true) {
+		if (GET_FLAG(ZERO) == false) {
+			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
 	case NC:
-		if (GET_FLAG(CARRY) != false) {
+		if (GET_FLAG(CARRY) == true) {
+			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
 	case Cc:
-		if (GET_FLAG(CARRY) != true) {
+		if (GET_FLAG(CARRY) == false) {
+			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
@@ -736,6 +751,7 @@ void RET_cc(System *system, uint8_t condition) {
 		// WHY?
 		return;
 	}
+	system->current_instruction_duration = 20;
 	uint16_t sp = GET_16BIT_REGISTER(sp);
 	uint16_t pc = system->memory[sp++] + (system->memory[sp++] << 8);
 	SET_16BIT_REGISTER(SP, sp);
@@ -894,3 +910,70 @@ void NOP(System *system) {
 void SCF(System *system);
 
 void STOP(System *system);
+
+void get_instruction_length(System *system) {
+	static uint8_t length[256] = {
+	    1, 3, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1, 1, 1,
+	    2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
+	    1, 1, 2, 1, 2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 1,
+	    2, 1, 1, 1, 3, 2, 3, 3, 2, 1, 1, 1, 3, 0, 3, 1, 2, 1, 1, 1, 3, 0,
+	    3, 0, 2, 1, 2, 1, 2, 0, 0, 1, 2, 1, 2, 1, 3, 0, 0, 0, 2, 1, 2, 1,
+	    2, 1, 0, 1, 2, 1, 2, 1, 3, 1, 0, 0, 2, 1};
+	uint16_t instruction = system->current_instruction;
+	if (instruction > 0xFF)
+		instruction = instruction >> 8;
+
+	system->current_instruction_length = length[instruction];
+}
+
+void get_instruction_duration(System *system) {
+	static uint8_t regular_duration[256] = {
+	    4,	12, 8,	8,  4,	4,  8,	4,  20, 8,  8,	8,    4,  4,  8, 4,
+	    4,	12, 8,	8,  4,	4,  8,	4,  12, 8,  8,	8,    4,  4,  8, 4,
+	    ND, 12, 8,	8,  4,	4,  8,	4,  ND, 8,  8,	8,    4,  4,  8, 4,
+	    ND, 12, 8,	8,  12, 12, 12, 4,  ND, 8,  8,	8,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    8,	8,  8,	8,  8,	8,  4,	8,  4,	4,  4,	4,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    4,	4,  4,	4,  4,	4,  8,	4,  4,	4,  4,	4,    4,  4,  8, 4,
+	    ND, 12, ND, 16, ND, 16, 8,	16, ND, 16, ND, 0xCB, ND, 24, 8, 16,
+	    ND, 12, ND, 0,  ND, 16, 8,	16, ND, 16, ND, 0,    ND, 0,  8, 16,
+	    12, 12, 8,	0,  0,	16, 8,	16, 16, 4,  16, 0,    0,  0,  8, 16,
+	    12, 12, 8,	4,  0,	16, 8,	16, 12, 8,  16, 4,    0,  0,  8, 16,
+	};
+
+	static uint8_t extended_duration[256] = {
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8, 8, 8, 8,  8,
+	    8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8,
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8, 8, 8, 8,  8,
+	    8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8,
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8, 8, 8, 8,  8,
+	    8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8,
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8, 8, 8, 8,  8,
+	    8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8,
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8, 8, 8, 8,  8,
+	    8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8,
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8, 8, 8, 8,  8,
+	    8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,  8, 8, 8, 16, 8,
+	    8, 8, 8,  8, 8, 8, 16, 8, 8, 8, 8,	8, 8, 8, 16, 8,
+	};
+
+	uint16_t instruction = system->current_instruction;
+	bool extended = instruction >> 8 == 0xCB;
+	if (extended)
+		system->current_instruction_duration =
+		    extended_duration[instruction & 0xFF];
+	else
+		system->current_instruction_duration =
+		    regular_duration[instruction];
+}
