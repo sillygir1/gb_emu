@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -9,7 +10,19 @@ typedef enum {
 	NO_ERROR,
 	FILE_NOT_FOUND,
 	FILE_SIZE_WEIRD,
+
+	WINDOW_INITIALIZATION_ERROR,
 } Errors;
+
+typedef struct {
+	uint8_t pixel_scale;
+} Settings;
+
+typedef struct {
+	SDL_Window *window;
+	SDL_Renderer *renderer;
+	SDL_Texture *tiles[256];
+} Graphics;
 
 typedef struct {
 	uint8_t registers[12];
@@ -21,11 +34,17 @@ typedef struct {
 	bool interrupt_pending;
 	FILE *rom;
 	uint32_t rom_size;
+	Graphics *graphics;
+	Settings *settings;
 } System;
 
 bool worker(System *system);
 
-void close(System *system, uint8_t code);
+void allocate_system(System *system);
+
+void free_system(System *system);
+
+void close_(System *system, uint8_t code);
 
 void load_rom(System *system, char path[]);
 

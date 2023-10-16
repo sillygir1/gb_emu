@@ -2,7 +2,20 @@
 #include "instructions.h"
 #include "registers.h"
 
-void close(System *system, uint8_t code) {
+void allocate_system(System *system) {
+	system->settings = malloc(sizeof(*system->settings));
+	system->graphics = malloc(sizeof(*system->graphics));
+	memset(system->memory, 0, sizeof(system->memory));
+	memset(system->registers, 0, sizeof(system->registers));
+}
+
+void free_system(System *system) {
+	free(system->settings);
+	free(system->graphics);
+}
+
+void close_(System *system, uint8_t code) {
+	free_system(system);
 	free(system);
 	exit(code);
 }
@@ -12,14 +25,14 @@ void load_rom(System *system, char path[]) {
 	system->rom = fopen(path, "r");
 	if (!system->rom) {
 		printf("No file or something\n");
-		close(system, FILE_NOT_FOUND);
+		close_(system, FILE_NOT_FOUND);
 	}
 	if (system->rom)
 		fseek(system->rom, 0L, SEEK_END);
 	long int length = ftell(system->rom);
 	if (length != 32768) {
 		printf("I don't know what to do yet\n");
-		close(system, FILE_SIZE_WEIRD);
+		close_(system, FILE_SIZE_WEIRD);
 	}
 	system->rom_size = length;
 	fseek(system->rom, 0L, 0);
