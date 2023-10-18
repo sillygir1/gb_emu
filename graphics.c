@@ -29,4 +29,12 @@ void draw_pixel(System *system, uint8_t x, uint8_t y) {
 	SDL_RenderFillRect(system->graphics->renderer, &r);
 }
 
+void draw_tiles(System *system, uint16_t start) {
+	if (start) { // for testing purposes
+		     //
+	} else {
+		//
+	}
+}
+
 int render(System *system) { return 0; }

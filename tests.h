@@ -2,10 +2,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <SDL2/SDL.h>
 
 #include "instructions.h"
 #include "registers.h"
 #include "system.h"
+#include "graphics.h"
 
 /* Batch tests */
 
@@ -230,3 +232,5 @@ bool test_PUSH_r16(System *system, uint16_t test_value, bool print_all);
 bool test_CCF(System *system, bool print_all);
 
 bool test_CPL(System *system, uint8_t test_value, bool print_all);
+
+void test_render(System *system, uint16_t address);

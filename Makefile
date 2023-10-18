@@ -1,7 +1,7 @@
 all: compile_all gb_emu
 
-debug: compile_all
-	gcc out/main.o out/instructions.o out/registers.o out/system.o out/graphics.o out/tile.o -lSDL2 -lSDL2main -o out/binary -g
+debug: compile_all tests.o
+	gcc out/main.o out/instructions.o out/registers.o out/system.o out/graphics.o out/tile.o out/tests.o -lSDL2 -lSDL2main -o out/binary -g
 
 make_dir:
 	mkdir -p out
