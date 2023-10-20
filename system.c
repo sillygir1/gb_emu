@@ -20,6 +20,26 @@ void close_(System *system, uint8_t code) {
 	exit(code);
 }
 
+void load_memory_dump(System *system, char path[]) {
+	system->rom = fopen(path, "r");
+	if (!system->rom) {
+		printf("No file or something\n");
+		close_(system, FILE_NOT_FOUND);
+	}
+	if (system->rom)
+		fseek(system->rom, 0L, SEEK_END);
+	long int length = ftell(system->rom);
+	if (length != 0xFFFF) {
+		printf("Weird size\n");
+		close_(system, FILE_SIZE_WEIRD);
+	}
+	system->rom_size = length;
+	fseek(system->rom, 0L, 0);
+	for (int i = 0; i < length; i++) {
+		fread(system->memory + i, 1, 1, system->rom);
+	}
+}
+
 void load_rom(System *system, char path[]) {
 
 	system->rom = fopen(path, "r");

@@ -46,6 +46,8 @@ void free_system(System *system);
 
 void close_(System *system, uint8_t code);
 
+void load_memory_dump(System *system, char path[]);
+
 void load_rom(System *system, char path[]);
 
 void execute_instruction(System *system);
