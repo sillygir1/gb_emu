@@ -5,7 +5,7 @@
 void static ADD_flags(System *system, uint8_t a, uint8_t b, bool carry) {
 	uint16_t result = a + b;
 	if (carry)
-		result += GET_FLAG(CARRY);
+		result += GET_CPU_FLAG(CARRY);
 	SET_FLAG(ZERO, !result);
 	SET_FLAG(SUB, 0);
 	SET_FLAG(HALFCARRY, (a & 0xF + b & 0xF) & 0x10 == 0x10);
@@ -27,7 +27,7 @@ void static AND_flags(System *system, uint8_t result) {
 }
 
 void static SUB_flags(System *system, uint8_t a, uint8_t b) {
-	bool carry = GET_FLAG(CARRY);
+	bool carry = GET_CPU_FLAG(CARRY);
 	uint8_t result = a - b;
 	SET_FLAG(SUB, 1);
 	SET_FLAG(ZERO, !result);
@@ -36,7 +36,7 @@ void static SUB_flags(System *system, uint8_t a, uint8_t b) {
 }
 
 void static SBC_flags(System *system, uint8_t a, uint8_t b) {
-	bool carry = GET_FLAG(CARRY);
+	bool carry = GET_CPU_FLAG(CARRY);
 	uint8_t result = a - b - carry;
 	SET_FLAG(SUB, 1);
 	SET_FLAG(ZERO, !result);
@@ -129,7 +129,7 @@ void static SP_e8_flags(System *system, uint16_t sp, char e8) {
 
 void ADC_A_r8(System *system, uint8_t r8) {
 	uint16_t result =
-	    system->registers[A] + system->registers[r8] + GET_FLAG(CARRY);
+	    system->registers[A] + system->registers[r8] + GET_CPU_FLAG(CARRY);
 
 	ADD_flags(system, system->registers[A], system->registers[r8], 1);
 	system->registers[A] = result;
@@ -137,15 +137,15 @@ void ADC_A_r8(System *system, uint8_t r8) {
 
 void ADC_A_HL(System *system) {
 	uint16_t address = GET_16BIT_REGISTER(HL);
-	uint16_t result =
-	    system->registers[A] + system->memory[address] + GET_FLAG(CARRY);
+	uint16_t result = system->registers[A] + system->memory[address] +
+			  GET_CPU_FLAG(CARRY);
 
 	ADD_flags(system, system->registers[A], system->memory[address], 1);
 	system->registers[A] = result;
 }
 
 void ADC_A_n8(System *system, uint8_t n8) {
-	uint16_t result = system->registers[A] + n8 + GET_FLAG(CARRY);
+	uint16_t result = system->registers[A] + n8 + GET_CPU_FLAG(CARRY);
 
 	ADD_flags(system, system->registers[A], n8, 1);
 	system->registers[A] = result;
@@ -254,7 +254,7 @@ void OR_A_n8(System *system, uint8_t n8) {
 
 void SBC_A_r8(System *system, uint8_t r8) {
 	uint8_t result =
-	    system->registers[A] - system->registers[r8] - GET_FLAG(CARRY);
+	    system->registers[A] - system->registers[r8] - GET_CPU_FLAG(CARRY);
 
 	SBC_flags(system, system->registers[A], system->registers[r8]);
 	system->registers[A] = result;
@@ -262,15 +262,15 @@ void SBC_A_r8(System *system, uint8_t r8) {
 
 void SBC_A_HL(System *system) {
 	uint16_t address = GET_16BIT_REGISTER(HL);
-	uint8_t result =
-	    system->registers[A] - system->memory[address] - GET_FLAG(CARRY);
+	uint8_t result = system->registers[A] - system->memory[address] -
+			 GET_CPU_FLAG(CARRY);
 
 	SBC_flags(system, system->registers[A], system->memory[address]);
 	system->registers[A] = result;
 }
 
 void SBC_A_n8(System *system, uint8_t n8) {
-	uint8_t result = system->registers[A] - n8 - GET_FLAG(CARRY);
+	uint8_t result = system->registers[A] - n8 - GET_CPU_FLAG(CARRY);
 
 	SBC_flags(system, system->registers[A], n8);
 	system->registers[A] = result;
@@ -390,7 +390,7 @@ void SWAP_HL(System *system) {
 
 void RL_r8(System *system, uint8_t r8) {
 	bool carry = system->registers[r8] & (1 << 7);
-	uint8_t result = (system->registers[r8] << 1) + GET_FLAG(CARRY);
+	uint8_t result = (system->registers[r8] << 1) + GET_CPU_FLAG(CARRY);
 	BITSHIFT_flags(system, result, carry);
 	system->registers[r8] = result;
 }
@@ -398,14 +398,14 @@ void RL_r8(System *system, uint8_t r8) {
 void RL_HL(System *system) {
 	uint16_t address = GET_16BIT_REGISTER(HL);
 	bool carry = system->memory[address] & (1 << 7);
-	uint8_t result = (system->memory[address] << 1) + GET_FLAG(CARRY);
+	uint8_t result = (system->memory[address] << 1) + GET_CPU_FLAG(CARRY);
 	BITSHIFT_flags(system, result, carry);
 	system->memory[address] = result;
 }
 
 void RLA(System *system) {
 	bool carry = system->registers[A] & (1 << 7);
-	uint8_t result = (system->registers[A] << 1) + GET_FLAG(CARRY);
+	uint8_t result = (system->registers[A] << 1) + GET_CPU_FLAG(CARRY);
 	SET_FLAG(ZERO, false);
 	SET_FLAG(SUB, false);
 	SET_FLAG(HALFCARRY, false);
@@ -440,7 +440,8 @@ void RLCA(System *system) {
 
 void RR_r8(System *system, uint8_t r8) {
 	bool carry = system->registers[r8] & 1;
-	uint8_t result = (system->registers[r8] >> 1) + (GET_FLAG(CARRY) << 7);
+	uint8_t result =
+	    (system->registers[r8] >> 1) + (GET_CPU_FLAG(CARRY) << 7);
 	BITSHIFT_flags(system, result, carry);
 	system->registers[r8] = result;
 }
@@ -449,14 +450,15 @@ void RR_HL(System *system) {
 	uint16_t address = GET_16BIT_REGISTER(HL);
 	bool carry = system->memory[address] & 1;
 	uint8_t result =
-	    (system->memory[address] >> 1) + (GET_FLAG(CARRY) << 7);
+	    (system->memory[address] >> 1) + (GET_CPU_FLAG(CARRY) << 7);
 	BITSHIFT_flags(system, result, carry);
 	system->memory[address] = result;
 }
 
 void RRA(System *system) {
 	bool carry = system->registers[A] & 1;
-	uint8_t result = (system->registers[A] >> 1) + (GET_FLAG(CARRY) << 7);
+	uint8_t result =
+	    (system->registers[A] >> 1) + (GET_CPU_FLAG(CARRY) << 7);
 	SET_FLAG(ZERO, false);
 	SET_FLAG(SUB, false);
 	SET_FLAG(HALFCARRY, false);
@@ -643,25 +645,25 @@ void JP_n16(System *system, uint16_t n16) { SET_16BIT_REGISTER(PC, n16); }
 void JP_cc_n16(System *system, uint8_t condition, uint16_t n16) {
 	switch (condition) {
 	case NZ:
-		if (GET_FLAG(ZERO) == true) {
+		if (GET_CPU_FLAG(ZERO) == true) {
 			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
 	case Z:
-		if (GET_FLAG(ZERO) == false) {
+		if (GET_CPU_FLAG(ZERO) == false) {
 			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
 	case NC:
-		if (GET_FLAG(CARRY) == true) {
+		if (GET_CPU_FLAG(CARRY) == true) {
 			system->current_instruction_duration = 12;
 			return;
 		}
 		break;
 	case Cc:
-		if (GET_FLAG(CARRY) == false) {
+		if (GET_CPU_FLAG(CARRY) == false) {
 			system->current_instruction_duration = 12;
 			return;
 		}
@@ -684,25 +686,25 @@ void JR_cc_n16(System *system, uint8_t condition, char e8) {
 	bool taken = false;
 	switch (condition) {
 	case NZ:
-		if (GET_FLAG(ZERO) == false) {
+		if (GET_CPU_FLAG(ZERO) == false) {
 			SET_16BIT_REGISTER(PC, address);
 			taken = true;
 		}
 		break;
 	case Z:
-		if (GET_FLAG(ZERO) == true) {
+		if (GET_CPU_FLAG(ZERO) == true) {
 			SET_16BIT_REGISTER(PC, address);
 			taken = true;
 		}
 		break;
 	case NC:
-		if (GET_FLAG(CARRY) == false) {
+		if (GET_CPU_FLAG(CARRY) == false) {
 			SET_16BIT_REGISTER(PC, address);
 			taken = true;
 		}
 		break;
 	case Cc:
-		if (GET_FLAG(CARRY) == true) {
+		if (GET_CPU_FLAG(CARRY) == true) {
 			SET_16BIT_REGISTER(PC, address);
 			taken = true;
 		}
@@ -724,25 +726,25 @@ void RET(System *system) {
 void RET_cc(System *system, uint8_t condition) {
 	switch (condition) {
 	case NZ:
-		if (GET_FLAG(ZERO) == true) {
+		if (GET_CPU_FLAG(ZERO) == true) {
 			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
 	case Z:
-		if (GET_FLAG(ZERO) == false) {
+		if (GET_CPU_FLAG(ZERO) == false) {
 			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
 	case NC:
-		if (GET_FLAG(CARRY) == true) {
+		if (GET_CPU_FLAG(CARRY) == true) {
 			system->current_instruction_duration = 8;
 			return;
 		}
 		break;
 	case Cc:
-		if (GET_FLAG(CARRY) == false) {
+		if (GET_CPU_FLAG(CARRY) == false) {
 			system->current_instruction_duration = 8;
 			return;
 		}
@@ -864,7 +866,7 @@ void PUSH_r16(System *system, uint8_t r16) {
 /* Miscellaneous Instructions */
 
 void CCF(System *system) {
-	bool c = GET_FLAG(CARRY);
+	bool c = GET_CPU_FLAG(CARRY);
 	SET_FLAG(CARRY, !c);
 	SET_FLAG(HALFCARRY, false);
 	SET_FLAG(SUB, false);
@@ -879,9 +881,9 @@ void CPL(System *system) {
 
 void DAA(System *system) {
 	// Thanks a lot to u/Pattern_Key, this is based on their implementation
-	bool n = GET_FLAG(SUB);
-	bool c = GET_FLAG(CARRY);
-	bool h = GET_FLAG(HALFCARRY);
+	bool n = GET_CPU_FLAG(SUB);
+	bool c = GET_CPU_FLAG(CARRY);
+	bool h = GET_CPU_FLAG(HALFCARRY);
 	if (n) {
 		if (c)
 			system->registers[A] -= 0x60;

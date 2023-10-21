@@ -60,8 +60,8 @@ void put_GPR16bit(uint8_t registers[], uint8_t reg, uint16_t value) {
 	}
 }
 
-bool get_flag(uint8_t registers[], uint8_t flag) {
-	bool ret = registers[F] & (1 << flag);
+bool get_flag(uint8_t reg, uint8_t flag) {
+	bool ret = reg & (1 << flag);
 	return ret;
 }
 
@@ -75,6 +75,6 @@ void set_flag(uint8_t registers[], uint8_t flag, bool value) {
 
 void get_all_flags(uint8_t registers[]) {
 	printf("Flags:\nz: %hhu\nc: %hhu\nhc: %hhu\nn: %hhu\n",
-	       get_flag(registers, ZERO), get_flag(registers, CARRY),
-	       get_flag(registers, HALFCARRY), get_flag(registers, SUB));
+	       get_flag(registers[F], ZERO), get_flag(registers[F], CARRY),
+	       get_flag(registers[F], HALFCARRY), get_flag(registers[F], SUB));
 }

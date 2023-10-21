@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define SET_FLAG(flag, value) set_flag(system->registers, flag, value)
-#define GET_FLAG(flag) get_flag(system->registers, flag)
+#define GET_CPU_FLAG(flag) get_flag(system->registers[F], flag)
 #define GET_ALL_FLAGS() get_all_flags(system->registers)
 #define GET_16BIT_REGISTER(REGISTER) get_GPR16bit(system->registers, REGISTER)
 #define SET_16BIT_REGISTER(REGISTER, VALUE)                                    \
@@ -65,7 +65,7 @@ void put_GPR16bit(uint8_t registers[], uint8_t reg, uint16_t value);
 // @param registers Registers array
 // @param flag Flag name
 // @return Flag value
-bool get_flag(uint8_t registers[], uint8_t flag);
+bool get_flag(uint8_t reg, uint8_t flag);
 
 // Set flag value
 // @param registers Registers array
