@@ -8,6 +8,7 @@
 
 #define SET_CPU_FLAG(flag, value) set_flag(system->registers + F, flag, value)
 #define GET_CPU_FLAG(flag) get_flag(system->registers[F], flag)
+#define GET_FLAG(where, bit) get_flag(system->memory[where], bit)
 #define GET_ALL_FLAGS() get_all_flags(system->registers)
 #define GET_16BIT_REGISTER(REGISTER) get_GPR16bit(system->registers, REGISTER)
 #define SET_16BIT_REGISTER(REGISTER, VALUE)                                    \
