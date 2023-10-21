@@ -65,16 +65,18 @@ bool get_flag(uint8_t reg, uint8_t flag) {
 	return ret;
 }
 
-void set_flag(uint8_t registers[], uint8_t flag, bool value) {
+void set_flag(uint8_t *reg, uint8_t flag, bool value) {
 	if (value) {
-		registers[F] |= (1 << flag);
+		*reg |= (1 << flag);
 	} else {
-		registers[F] &= ~(1 << flag);
+		*reg &= ~(1 << flag);
 	}
 }
 
-void get_all_flags(uint8_t registers[]) {
+void get_all_flags(System *system) {
 	printf("Flags:\nz: %hhu\nc: %hhu\nhc: %hhu\nn: %hhu\n",
-	       get_flag(registers[F], ZERO), get_flag(registers[F], CARRY),
-	       get_flag(registers[F], HALFCARRY), get_flag(registers[F], SUB));
+	       get_flag(system->registers[F], ZERO),
+	       get_flag(system->registers[F], CARRY),
+	       get_flag(system->registers[F], HALFCARRY),
+	       get_flag(system->registers[F], SUB));
 }

@@ -407,16 +407,16 @@ void JP_n16(System *system, uint16_t n16);
 /// @param n16
 void JP_cc_n16(System *system, uint8_t condition, uint16_t n16);
 
-/// @brief Relative Jump to address n16.
+/// @brief Relative Jump to address.
 /// @param system
 /// @param e8
 void JR_n16(System *system, char e8);
 
-/// @brief Relative Jump to address n16 if condition cc is met.
+/// @brief Relative Jump to address if condition cc is met.
 /// @param system
 /// @param condition
 /// @param e8
-void JR_cc_n16(System *system, uint8_t condition, char e8);
+void JR_cc_n16(System *system, uint8_t condition, signed char e8);
 
 /// @brief Return from subroutine.
 /// @param system

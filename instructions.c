@@ -6,124 +6,124 @@ void static ADD_flags(System *system, uint8_t a, uint8_t b, bool carry) {
 	uint16_t result = a + b;
 	if (carry)
 		result += GET_CPU_FLAG(CARRY);
-	SET_FLAG(ZERO, !result);
-	SET_FLAG(SUB, 0);
-	SET_FLAG(HALFCARRY, (a & 0xF + b & 0xF) & 0x10 == 0x10);
+	SET_CPU_FLAG(ZERO, !result);
+	SET_CPU_FLAG(SUB, 0);
+	SET_CPU_FLAG(HALFCARRY, (a & 0xF + b & 0xF) & 0x10 == 0x10);
 	if (result > 0xFFU) {
-		SET_FLAG(CARRY, 1);
+		SET_CPU_FLAG(CARRY, 1);
 	} else
-		SET_FLAG(CARRY, 0);
+		SET_CPU_FLAG(CARRY, 0);
 }
 
 void static AND_flags(System *system, uint8_t result) {
 	if ((uint8_t)result == 0) {
-		SET_FLAG(ZERO, 1);
+		SET_CPU_FLAG(ZERO, 1);
 	} else {
-		SET_FLAG(ZERO, 0);
+		SET_CPU_FLAG(ZERO, 0);
 	};
-	SET_FLAG(SUB, 0);
-	SET_FLAG(HALFCARRY, 1);
-	SET_FLAG(CARRY, 0);
+	SET_CPU_FLAG(SUB, 0);
+	SET_CPU_FLAG(HALFCARRY, 1);
+	SET_CPU_FLAG(CARRY, 0);
 }
 
 void static SUB_flags(System *system, uint8_t a, uint8_t b) {
 	bool carry = GET_CPU_FLAG(CARRY);
 	uint8_t result = a - b;
-	SET_FLAG(SUB, 1);
-	SET_FLAG(ZERO, !result);
-	SET_FLAG(CARRY, a < b);
-	SET_FLAG(HALFCARRY, ((a & 0xF) < (b & 0xF)));
+	SET_CPU_FLAG(SUB, 1);
+	SET_CPU_FLAG(ZERO, !result);
+	SET_CPU_FLAG(CARRY, a < b);
+	SET_CPU_FLAG(HALFCARRY, ((a & 0xF) < (b & 0xF)));
 }
 
 void static SBC_flags(System *system, uint8_t a, uint8_t b) {
 	bool carry = GET_CPU_FLAG(CARRY);
 	uint8_t result = a - b - carry;
-	SET_FLAG(SUB, 1);
-	SET_FLAG(ZERO, !result);
-	SET_FLAG(CARRY, a < (b + carry));
-	SET_FLAG(HALFCARRY, ((a & 0xF) < ((b & 0xF) + carry)));
+	SET_CPU_FLAG(SUB, 1);
+	SET_CPU_FLAG(ZERO, !result);
+	SET_CPU_FLAG(CARRY, a < (b + carry));
+	SET_CPU_FLAG(HALFCARRY, ((a & 0xF) < ((b & 0xF) + carry)));
 }
 
 void static DEC_flags(System *system, uint8_t result) {
-	SET_FLAG(SUB, true);
+	SET_CPU_FLAG(SUB, true);
 
 	if (result == 0) {
-		SET_FLAG(ZERO, true);
+		SET_CPU_FLAG(ZERO, true);
 	} else
-		SET_FLAG(ZERO, false);
+		SET_CPU_FLAG(ZERO, false);
 
 	if (result & 0xF == 0b1111) {
-		SET_FLAG(HALFCARRY, true);
+		SET_CPU_FLAG(HALFCARRY, true);
 	} else
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 }
 
 void static INC_flags(System *system, uint8_t result) {
-	SET_FLAG(SUB, false);
+	SET_CPU_FLAG(SUB, false);
 	if (result == 0) {
-		SET_FLAG(ZERO, true);
+		SET_CPU_FLAG(ZERO, true);
 	} else
-		SET_FLAG(ZERO, false);
+		SET_CPU_FLAG(ZERO, false);
 	if ((result - 1) & 0xF == 0b1111) {
-		SET_FLAG(HALFCARRY, true);
+		SET_CPU_FLAG(HALFCARRY, true);
 	} else {
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 	}
 }
 
 void static OR_flags(System *system, uint8_t result) {
 	if ((uint8_t)result == 0) {
-		SET_FLAG(ZERO, 1);
+		SET_CPU_FLAG(ZERO, 1);
 	} else {
-		SET_FLAG(ZERO, 0);
+		SET_CPU_FLAG(ZERO, 0);
 	};
-	SET_FLAG(SUB, 0);
-	SET_FLAG(HALFCARRY, 0);
-	SET_FLAG(CARRY, 0);
+	SET_CPU_FLAG(SUB, 0);
+	SET_CPU_FLAG(HALFCARRY, 0);
+	SET_CPU_FLAG(CARRY, 0);
 }
 
 void static XOR_flags(System *system, uint8_t result) {
-	SET_FLAG(ZERO, !result);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, false);
+	SET_CPU_FLAG(ZERO, !result);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, false);
 }
 
 void static ADD_HL_flags(System *system, uint16_t a, uint16_t b) {
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, (a & 0xFFF) + (b & 0xFFF) > 0xFFF);
-	SET_FLAG(CARRY, (a + b) > 0xFFFF);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, (a & 0xFFF) + (b & 0xFFF) > 0xFFF);
+	SET_CPU_FLAG(CARRY, (a + b) > 0xFFFF);
 }
 
 void static BIT_flags(System *system, bool value) {
-	SET_FLAG(ZERO, !value);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, true);
+	SET_CPU_FLAG(ZERO, !value);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, true);
 }
 
 void static SWAP_flags(System *system, bool value) {
-	SET_FLAG(ZERO, !value);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, false);
+	SET_CPU_FLAG(ZERO, !value);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, false);
 }
 
 void static BITSHIFT_flags(System *system, uint8_t result, bool carry) {
-	SET_FLAG(ZERO, !result);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, carry);
+	SET_CPU_FLAG(ZERO, !result);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, carry);
 }
 
 void static SP_e8_flags(System *system, uint16_t sp, char e8) {
-	SET_FLAG(ZERO, false);
-	SET_FLAG(SUB, false);
+	SET_CPU_FLAG(ZERO, false);
+	SET_CPU_FLAG(SUB, false);
 	bool hc = e8 >= 0 ? (sp & 0xF) + (e8 & 0xF) > 0xF
 			  : (sp & 0xF) < ((-1 * e8) & 0xF);
-	SET_FLAG(HALFCARRY, hc);
+	SET_CPU_FLAG(HALFCARRY, hc);
 	bool c =
 	    e8 >= 0 ? (sp & 0xFF) + (e8) > 0xFF : (sp & 0xFF) < ((-1 * e8));
-	SET_FLAG(CARRY, c);
+	SET_CPU_FLAG(CARRY, c);
 }
 /* 8-bit arithmetic and logic instructions */
 
@@ -406,10 +406,10 @@ void RL_HL(System *system) {
 void RLA(System *system) {
 	bool carry = system->registers[A] & (1 << 7);
 	uint8_t result = (system->registers[A] << 1) + GET_CPU_FLAG(CARRY);
-	SET_FLAG(ZERO, false);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, carry);
+	SET_CPU_FLAG(ZERO, false);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, carry);
 	system->registers[A] = result;
 }
 
@@ -431,10 +431,10 @@ void RLC_HL(System *system) {
 void RLCA(System *system) {
 	bool carry = system->registers[A] & (1 << 7);
 	uint8_t result = (system->registers[A] << 1) + carry;
-	SET_FLAG(ZERO, false);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, carry);
+	SET_CPU_FLAG(ZERO, false);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, carry);
 	system->registers[A] = result;
 }
 
@@ -459,10 +459,10 @@ void RRA(System *system) {
 	bool carry = system->registers[A] & 1;
 	uint8_t result =
 	    (system->registers[A] >> 1) + (GET_CPU_FLAG(CARRY) << 7);
-	SET_FLAG(ZERO, false);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, carry);
+	SET_CPU_FLAG(ZERO, false);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, carry);
 	system->registers[A] = result;
 }
 
@@ -484,10 +484,10 @@ void RRC_HL(System *system) {
 void RRCA(System *system) {
 	bool carry = system->registers[A] & 1;
 	uint8_t result = (system->registers[A] >> 1) + (carry << 7);
-	SET_FLAG(ZERO, false);
-	SET_FLAG(SUB, false);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(CARRY, carry);
+	SET_CPU_FLAG(ZERO, false);
+	SET_CPU_FLAG(SUB, false);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(CARRY, carry);
 	system->registers[A] = result;
 }
 
@@ -681,7 +681,7 @@ void JR_n16(System *system, char e8) {
 	SET_16BIT_REGISTER(PC, address);
 }
 
-void JR_cc_n16(System *system, uint8_t condition, char e8) {
+void JR_cc_n16(System *system, uint8_t condition, signed char e8) {
 	uint16_t address = GET_16BIT_REGISTER(PC) + e8 + 2;
 	bool taken = false;
 	switch (condition) {
@@ -754,7 +754,7 @@ void RET_cc(System *system, uint8_t condition) {
 		return;
 	}
 	system->current_instruction_duration = 20;
-	uint16_t sp = GET_16BIT_REGISTER(sp);
+	uint16_t sp = GET_16BIT_REGISTER(SP);
 	uint16_t pc = system->memory[sp++] + (system->memory[sp++] << 8);
 	SET_16BIT_REGISTER(SP, sp);
 	SET_16BIT_REGISTER(PC, pc);
@@ -867,16 +867,16 @@ void PUSH_r16(System *system, uint8_t r16) {
 
 void CCF(System *system) {
 	bool c = GET_CPU_FLAG(CARRY);
-	SET_FLAG(CARRY, !c);
-	SET_FLAG(HALFCARRY, false);
-	SET_FLAG(SUB, false);
+	SET_CPU_FLAG(CARRY, !c);
+	SET_CPU_FLAG(HALFCARRY, false);
+	SET_CPU_FLAG(SUB, false);
 }
 
 void CPL(System *system) {
 	uint8_t a = system->registers[A];
 	system->registers[A] = ~a;
-	SET_FLAG(HALFCARRY, true);
-	SET_FLAG(SUB, true);
+	SET_CPU_FLAG(HALFCARRY, true);
+	SET_CPU_FLAG(SUB, true);
 }
 
 void DAA(System *system) {
@@ -892,7 +892,7 @@ void DAA(System *system) {
 	} else {
 		if (c || system->registers[A] > 0x99) {
 			system->registers[A] += 0x60;
-			SET_FLAG(CARRY, true);
+			SET_CPU_FLAG(CARRY, true);
 		}
 		if (h || (system->registers[A] & 0xF) > 0x9)
 			system->registers[A] += 0x6;

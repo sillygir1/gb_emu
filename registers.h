@@ -1,11 +1,12 @@
 #pragma once
 
+#include "system.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-#define SET_FLAG(flag, value) set_flag(system->registers, flag, value)
+#define SET_CPU_FLAG(flag, value) set_flag(system->registers + F, flag, value)
 #define GET_CPU_FLAG(flag) get_flag(system->registers[F], flag)
 #define GET_ALL_FLAGS() get_all_flags(system->registers)
 #define GET_16BIT_REGISTER(REGISTER) get_GPR16bit(system->registers, REGISTER)
@@ -71,8 +72,8 @@ bool get_flag(uint8_t reg, uint8_t flag);
 // @param registers Registers array
 // @param flag Flag name
 // @param value Flag value
-void set_flag(uint8_t registers[], uint8_t flag, bool value);
+void set_flag(uint8_t *reg, uint8_t flag, bool value);
 
 // Print all flags to cli
 // @param registers Registers array
-void get_all_flags(uint8_t registers[]);
+void get_all_flags(System *system);

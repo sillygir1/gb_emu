@@ -12,28 +12,28 @@ static uint16_t test_uint16 = 0xC0DE;
 bool test_all(System *system, bool print_all) {
 	uint16_t sum = 0;
 	/* 8-bit instructions */
-	// sum += test_8bit(system, print_all);
+	sum += test_8bit(system, print_all);
 
 	/* 16-bit instructions*/
-	// sum += test_16bit(system, print_all);
+	sum += test_16bit(system, print_all);
 
 	/* Bit operations instructions */
-	// sum += test_bit(system, print_all);
+	sum += test_bit(system, print_all);
 
 	/* Bit shift instructions */
-	// sum += test_bitshift(system, print_all);
+	sum += test_bitshift(system, print_all);
 
 	/* Load instructions */
-	// sum += test_load(system, print_all);
+	sum += test_load(system, print_all);
 
 	/* Jumps and Subroutines */
 	sum += test_jumps_subtoutines(system, print_all);
 
 	/* Stack operations instructions */
-	// sum += test_stack(system, print_all);
+	sum += test_stack(system, print_all);
 
 	/* Miscellaneous Instructions */
-	// test_misc(system, print_all);
+	test_misc(system, print_all);
 
 	/* Result */
 	if (sum) {
@@ -173,7 +173,7 @@ bool test_jumps_subtoutines(System *system, bool print_all) {
 	uint16_t sum = 0;
 	printf("\nJumps and subroutines instructions test.\n");
 
-	for (uint32_t i = 0; i <= 0xFFFF; i++) {
+	for (uint32_t i = 0; i <= 0x8000; i++) {
 		sum += test_JP_HL(system, i, print_all);
 		sum += test_JP_n16(system, i, print_all);
 		sum += test_JP_cc_n16(system, i, print_all);
@@ -287,8 +287,8 @@ bool test_ADC_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADC_A_r8(system, test_r8_1);
 		uint16_t res = (uint8_t)test_value + i;
 		zero = !res;
@@ -324,8 +324,8 @@ bool test_ADC_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, true);
 		ADC_A_r8(system, test_r8_1);
 		uint16_t res = (uint8_t)test_value + i + 1;
 		if (res > 0xFF) {
@@ -377,8 +377,8 @@ bool test_ADC_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADC_A_HL(system);
 		uint16_t res = (uint8_t)test_value + i;
 		zero = !res;
@@ -418,8 +418,8 @@ bool test_ADC_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, true);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, true);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADC_A_HL(system);
 		uint16_t res = (uint8_t)test_value + i + 1;
 		zero = !res;
@@ -471,8 +471,8 @@ bool test_ADC_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADC_A_n8(system, test_value);
 		uint16_t res = (uint8_t)test_value + i;
 		if (res > 0xFF) {
@@ -507,8 +507,8 @@ bool test_ADC_A_n8(System *system, uint8_t test_value, bool print_all) {
 	}
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, true);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, true);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADC_A_n8(system, test_value);
 		uint16_t res = (uint8_t)test_value + i + 1;
 		zero = !res;
@@ -560,8 +560,8 @@ bool test_ADD_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADD_A_r8(system, test_r8_1);
 		uint16_t res = (uint8_t)test_value + i;
 		zero = !res;
@@ -615,8 +615,8 @@ bool test_ADD_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->memory[0xFFF] = test_value;
 		system->registers[H] = 0x0F;
 		system->registers[L] = 0xFF;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADD_A_HL(system);
 		uint16_t res = (uint8_t)test_value + i;
 		zero = !res;
@@ -667,8 +667,8 @@ bool test_ADD_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		ADD_A_n8(system, test_value);
 		uint16_t res = (uint8_t)test_value + i;
 		zero = !res;
@@ -720,8 +720,8 @@ bool test_AND_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		AND_A_r8(system, test_r8_1);
 		uint16_t res = (uint8_t)test_value & i;
 		zero = !res;
@@ -766,8 +766,8 @@ bool test_AND_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		AND_A_HL(system);
 		uint16_t res = (uint8_t)test_value & i;
 		zero = !res;
@@ -810,8 +810,8 @@ bool test_AND_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		AND_A_n8(system, test_value);
 		uint16_t res = (uint8_t)test_value & i;
 		zero = !res;
@@ -855,8 +855,8 @@ bool test_CP_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		CP_A_r8(system, test_r8_1);
 		uint16_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -903,8 +903,8 @@ bool test_CP_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		CP_A_HL(system);
 		uint16_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -950,8 +950,8 @@ bool test_CP_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		CP_A_n8(system, test_value);
 		uint16_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -997,9 +997,9 @@ bool test_DEC_r8(System *system, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[test_r8_1] = i;
-		SET_FLAG(SUB, false);
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(ZERO, false);
+		SET_CPU_FLAG(SUB, false);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(ZERO, false);
 		carry = GET_CPU_FLAG(CARRY);
 		DEC_r8(system, test_r8_1);
 		uint8_t res = i - 1;
@@ -1043,9 +1043,9 @@ bool test_DEC_HL(System *system, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->memory[test_address] = i;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(SUB, false);
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(ZERO, false);
+		SET_CPU_FLAG(SUB, false);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(ZERO, false);
 		carry = GET_CPU_FLAG(CARRY);
 		DEC_HL(system);
 		uint8_t res = i - 1;
@@ -1088,9 +1088,9 @@ bool test_INC_r8(System *system, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[test_r8_1] = i;
-		SET_FLAG(SUB, false);
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(ZERO, false);
+		SET_CPU_FLAG(SUB, false);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(ZERO, false);
 		carry = GET_CPU_FLAG(CARRY);
 		INC_r8(system, test_r8_1);
 		uint8_t res = i + 1;
@@ -1182,8 +1182,8 @@ bool test_OR_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		bool carry = GET_CPU_FLAG(CARRY);
 		OR_A_r8(system, test_r8_1);
 		uint8_t res = (uint8_t)i | test_value;
@@ -1230,8 +1230,8 @@ bool test_OR_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
 		system->registers[F] = 0x00;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		OR_A_HL(system);
 		uint8_t res = (uint8_t)i | test_value;
 		carry = false;
@@ -1274,8 +1274,8 @@ bool test_OR_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		OR_A_n8(system, test_value);
 		uint8_t res = (uint8_t)i | test_value;
 		carry = false;
@@ -1319,8 +1319,8 @@ bool test_SBC_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, 0);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, 0);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SBC_A_r8(system, test_r8_1);
 		uint8_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -1355,8 +1355,8 @@ bool test_SBC_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, true);
 		SBC_A_r8(system, test_r8_1);
 		uint8_t res = (uint8_t)i - (uint8_t)test_value - 1;
 		sub = 1;
@@ -1403,8 +1403,8 @@ bool test_SBC_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, 0);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, 0);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SBC_A_HL(system);
 		uint8_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -1441,8 +1441,8 @@ bool test_SBC_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, 1);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, 1);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SBC_A_HL(system);
 		uint8_t res = (uint8_t)i - (uint8_t)test_value - 1;
 		sub = 1;
@@ -1488,8 +1488,8 @@ bool test_SBC_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, 0);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, 0);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SBC_A_n8(system, test_value);
 		uint8_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -1524,8 +1524,8 @@ bool test_SBC_A_n8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, true);
 		SBC_A_n8(system, test_value);
 		uint8_t res = (uint8_t)i - (uint8_t)test_value - 1;
 		sub = 1;
@@ -1571,8 +1571,8 @@ bool test_SUB_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SUB_A_r8(system, test_r8_1);
 		uint8_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -1623,8 +1623,8 @@ bool test_SUB_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->registers[A] = i;
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SUB_A_HL(system);
 		uint8_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -1675,8 +1675,8 @@ bool test_SUB_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		SUB_A_n8(system, test_value);
 		uint8_t res = (uint8_t)i - test_value;
 		zero = !res;
@@ -1726,8 +1726,8 @@ bool test_XOR_A_r8(System *system, uint8_t test_value, bool print_all) {
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
 		system->registers[test_r8_1] = test_value;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		bool carry = GET_CPU_FLAG(CARRY);
 		XOR_A_r8(system, test_r8_1);
 		uint8_t res = (uint8_t)i ^ test_value;
@@ -1774,8 +1774,8 @@ bool test_XOR_A_HL(System *system, uint8_t test_value, bool print_all) {
 		system->memory[test_address] = test_value;
 		SET_16BIT_REGISTER(HL, test_address);
 		system->registers[F] = 0x00;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		XOR_A_HL(system);
 		uint8_t res = (uint8_t)i ^ test_value;
 		carry = false;
@@ -1818,8 +1818,8 @@ bool test_XOR_A_n8(System *system, uint8_t test_value, bool print_all) {
 
 	for (uint16_t i = 0; i <= 0xFF; i++) {
 		system->registers[A] = i;
-		SET_FLAG(CARRY, false);
-		SET_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
+		SET_CPU_FLAG(HALFCARRY, false);
 		XOR_A_n8(system, test_value);
 		uint8_t res = (uint8_t)i ^ test_value;
 		carry = false;
@@ -1864,9 +1864,9 @@ bool test_ADD_HL_r16(System *system, uint16_t test_value, bool print_all) {
 
 	for (uint32_t i = 0; i <= 0xFFFF; i++) {
 		zero = GET_CPU_FLAG(ZERO);
-		SET_FLAG(SUB, true);
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(SUB, true);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		SET_16BIT_REGISTER(HL, i);
 		SET_16BIT_REGISTER(BC, test_value);
 		ADD_HL_r16(system, BC);
@@ -2216,7 +2216,7 @@ bool test_RL_r8(System *system, uint8_t test_value, bool print_all) {
 	system->registers[test_r8_1] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
 		carry = system->registers[test_r8_1] & (1 << 7);
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		uint8_t res = (system->registers[test_r8_1] << 1) + 0;
 		RL_r8(system, test_r8_1);
 		zero = !res;
@@ -2240,7 +2240,7 @@ bool test_RL_r8(System *system, uint8_t test_value, bool print_all) {
 	}
 	system->registers[test_r8_1] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(CARRY, true);
 		carry = system->registers[test_r8_1] & (1 << 7);
 		uint8_t res = (system->registers[test_r8_1] << 1) + 1;
 		RL_r8(system, test_r8_1);
@@ -2281,7 +2281,7 @@ bool test_RL_HL(System *system, uint8_t test_value, bool print_all) {
 	system->memory[test_address] = test_value;
 	SET_16BIT_REGISTER(HL, test_address);
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		carry = system->memory[test_address] & (1 << 7);
 		uint8_t res = (system->memory[test_address] << 1) + 0;
 		RL_HL(system);
@@ -2307,7 +2307,7 @@ bool test_RL_HL(System *system, uint8_t test_value, bool print_all) {
 	}
 	system->memory[test_address] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(CARRY, true);
 		carry = system->memory[test_address] & (1 << 7);
 		uint8_t res = (system->memory[test_address] << 1) + 1;
 		RL_HL(system);
@@ -2345,7 +2345,7 @@ bool test_RLA(System *system, uint8_t test_value, bool print_all) {
 	bool carry = false;
 	system->registers[A] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		carry = system->registers[A] & (1 << 7);
 		uint8_t res = (system->registers[A] << 1) + 0;
 		RLA(system);
@@ -2369,7 +2369,7 @@ bool test_RLA(System *system, uint8_t test_value, bool print_all) {
 	}
 	system->registers[A] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(CARRY, true);
 		carry = system->registers[A] & (1 << 7);
 		uint8_t res = (system->registers[A] << 1) + 1;
 		RLA(system);
@@ -2523,7 +2523,7 @@ bool test_RR_r8(System *system, uint8_t test_value, bool print_all) {
 	system->registers[test_r8_1] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
 		carry = system->registers[test_r8_1] & 1;
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		uint8_t res = (system->registers[test_r8_1] >> 1);
 		RR_r8(system, test_r8_1);
 		zero = !res;
@@ -2547,7 +2547,7 @@ bool test_RR_r8(System *system, uint8_t test_value, bool print_all) {
 	}
 	system->registers[A] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(CARRY, true);
 		carry = system->registers[test_r8_1] & 1;
 		uint8_t res = (system->registers[test_r8_1] >> 1) + (1 << 7);
 		RR_r8(system, test_r8_1);
@@ -2588,7 +2588,7 @@ bool test_RR_HL(System *system, uint8_t test_value, bool print_all) {
 	system->memory[test_address] = test_value;
 	SET_16BIT_REGISTER(HL, test_address);
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		carry = system->memory[test_address] & 1;
 		uint8_t res = (system->memory[test_address] >> 1);
 		RR_HL(system);
@@ -2614,7 +2614,7 @@ bool test_RR_HL(System *system, uint8_t test_value, bool print_all) {
 	}
 	system->memory[test_address] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(CARRY, true);
 		carry = system->memory[test_address] & 1;
 		uint8_t res = (system->memory[test_address] >> 1) + (1 << 7);
 		RR_HL(system);
@@ -2652,7 +2652,7 @@ bool test_RRA(System *system, uint8_t test_value, bool print_all) {
 	bool carry = false;
 	system->registers[A] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		carry = system->registers[A] & 1;
 		uint8_t res = (system->registers[A] >> 1);
 		RRA(system);
@@ -2676,7 +2676,7 @@ bool test_RRA(System *system, uint8_t test_value, bool print_all) {
 	}
 	system->registers[A] = test_value;
 	for (uint8_t i = 1; i < 9; i++) {
-		SET_FLAG(CARRY, true);
+		SET_CPU_FLAG(CARRY, true);
 		carry = system->registers[A] & 1;
 		uint8_t res = (system->registers[A] >> 1) + (1 << 7);
 		RRA(system);
@@ -3678,26 +3678,26 @@ bool test_JP_cc_n16(System *system, uint16_t test_value, bool print_all) {
 		uint16_t res = test_uint16;
 		switch (i) {
 		case NZ:
-			zero = !zero;
-			SET_FLAG(ZERO, zero);
+			zero = false;
+			SET_CPU_FLAG(ZERO, zero);
 			if (zero == false)
 				res = test_value;
 			break;
 		case Z:
-			zero = !zero;
-			SET_FLAG(ZERO, zero);
+			zero = true;
+			SET_CPU_FLAG(ZERO, zero);
 			if (zero == true)
 				res = test_value;
 			break;
 		case NC:
-			carry = !carry;
-			SET_FLAG(CARRY, carry);
+			carry = false;
+			SET_CPU_FLAG(CARRY, carry);
 			if (carry == false)
 				res = test_value;
 			break;
 		case Cc:
-			carry = !carry;
-			SET_FLAG(CARRY, carry);
+			carry = true;
+			SET_CPU_FLAG(CARRY, carry);
 			if (carry == true)
 				res = test_value;
 			break;
@@ -3767,44 +3767,45 @@ bool test_JR_cc_n16(System *system, uint16_t test_value, bool print_all) {
 			uint16_t res = test_uint16;
 			switch (i) {
 			case NZ:
-				zero = !zero;
-				SET_FLAG(ZERO, zero);
+				zero = false;
+				SET_CPU_FLAG(ZERO, zero);
 				if (zero == false)
-					res = test_value;
+					res = test_uint16 + j + 2;
 				break;
 			case Z:
-				zero = !zero;
-				SET_FLAG(ZERO, zero);
+				zero = true;
+				SET_CPU_FLAG(ZERO, zero);
 				if (zero == true)
-					res = test_value;
+					res = test_uint16 + j + 2;
 				break;
 			case NC:
-				carry = !carry;
-				SET_FLAG(CARRY, carry);
+				carry = false;
+				SET_CPU_FLAG(CARRY, carry);
 				if (carry == false)
-					res = test_value;
+					res = test_uint16 + j + 2;
 				break;
 			case Cc:
-				carry = !carry;
-				SET_FLAG(CARRY, carry);
+				carry = true;
+				SET_CPU_FLAG(CARRY, carry);
 				if (carry == true)
-					res = test_value;
+					res = test_uint16 + j + 2;
 				break;
 			default:
 				printf("WHAT?\n");
 				break;
 			}
-			JR_cc_n16(system, i, j);
+			JR_cc_n16(system, i, (signed char)j);
 
 			if (GET_16BIT_REGISTER(PC) == res) {
 				if (print_all)
 					printf("JR сс,n16: %hhu %hhu passed\n",
 					       i, test_value);
 			} else {
-				printf("JR сс,n16: %hhu %hu failed\nExpected: "
-				       "%u got: %u\n",
-				       i, test_value, res,
-				       GET_16BIT_REGISTER(PC));
+				printf(
+				    "JR сс,n16: %hhu %hu %d failed\nExpected: "
+				    "%u got: %u\n",
+				    i, test_value, j, res,
+				    GET_16BIT_REGISTER(PC));
 				failed = true;
 			}
 		}
@@ -3854,26 +3855,26 @@ bool test_RET_cc(System *system, uint16_t test_value, bool print_all) {
 		uint16_t res = test_uint16;
 		switch (i) {
 		case NZ:
-			zero = !zero;
-			SET_FLAG(ZERO, zero);
+			zero = false;
+			SET_CPU_FLAG(ZERO, zero);
 			if (zero == false)
 				res = test_value;
 			break;
 		case Z:
-			zero = !zero;
-			SET_FLAG(ZERO, zero);
+			zero = true;
+			SET_CPU_FLAG(ZERO, zero);
 			if (zero == true)
 				res = test_value;
 			break;
 		case NC:
-			carry = !carry;
-			SET_FLAG(CARRY, carry);
+			carry = false;
+			SET_CPU_FLAG(CARRY, carry);
 			if (carry == false)
 				res = test_value;
 			break;
 		case Cc:
-			carry = !carry;
-			SET_FLAG(CARRY, carry);
+			carry = true;
+			SET_CPU_FLAG(CARRY, carry);
 			if (carry == true)
 				res = test_value;
 			break;
@@ -3919,9 +3920,9 @@ bool test_ADD_HL_SP(System *system, uint16_t test_value, bool print_all) {
 
 	for (uint32_t i = 0; i <= 0xFFFF; i++) {
 		zero = GET_CPU_FLAG(ZERO);
-		SET_FLAG(SUB, true);
-		SET_FLAG(HALFCARRY, false);
-		SET_FLAG(CARRY, false);
+		SET_CPU_FLAG(SUB, true);
+		SET_CPU_FLAG(HALFCARRY, false);
+		SET_CPU_FLAG(CARRY, false);
 		SET_16BIT_REGISTER(HL, i);
 		SET_16BIT_REGISTER(SP, test_value);
 		ADD_HL_SP(system);
@@ -3966,7 +3967,7 @@ bool test_ADD_SP_e8(System *system, uint16_t test_value, bool print_all) {
 	bool sub = false;
 
 	for (int i = -128; i <= 127; i++) {
-		SET_FLAG(SUB, true);
+		SET_CPU_FLAG(SUB, true);
 		SET_16BIT_REGISTER(SP, test_value);
 		ADD_SP_e8(system, i);
 		zero = 0;
@@ -4112,7 +4113,7 @@ bool test_LD_HL_SP_e8(System *system, uint16_t test_value, bool print_all) {
 	bool sub = false;
 
 	for (int i = -128; i <= 127; i++) {
-		SET_FLAG(SUB, true);
+		SET_CPU_FLAG(SUB, true);
 		SET_16BIT_REGISTER(SP, test_value);
 		LD_HL_SP_e8(system, i);
 		zero = 0;
