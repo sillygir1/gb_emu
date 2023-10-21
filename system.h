@@ -21,8 +21,8 @@ typedef struct {
 typedef struct {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
-	SDL_Texture *tiles[256];
-	SDL_Rect tile_rect[256 / 8][256 / 8];
+	SDL_Texture *tile_texture;
+	SDL_Rect tile_rect;
 } Graphics;
 
 typedef struct {
@@ -39,7 +39,7 @@ typedef struct {
 	Settings *settings;
 } System;
 
-bool worker(System *system);
+int worker(System *system);
 
 void allocate_system(System *system);
 

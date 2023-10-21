@@ -1,4 +1,5 @@
 #include "system.h"
+#include "graphics.h"
 #include "instructions.h"
 #include "registers.h"
 
@@ -38,6 +39,7 @@ void load_memory_dump(System *system, char path[]) {
 	for (int i = 0; i < length; i++) {
 		fread(system->memory + i, 1, 1, system->rom);
 	}
+	system->rom_size = 32768;
 }
 
 void load_rom(System *system, char path[]) {
@@ -81,13 +83,25 @@ void execute_instruction(System *system) {
 				   system->current_instruction_length);
 }
 
-bool worker(System *system) {
+int worker(System *system) {
 	if (!system->rom) {
 		printf("No file or something\n");
 		return FILE_NOT_FOUND;
 	}
-	if (system->rom_size != 32768) {
+	if (system->rom_size != 32768) { // Temporary, have to deal with later
 		printf("Rom size is %d\n", system->rom_size);
 		return FILE_SIZE_WEIRD;
 	}
+
+	bool running = true;
+
+	while (running) {
+		for (uint32_t i = 0; i < 70224; i++) {
+			// execute_instruction();
+		}
+		if (render(system)) {
+			break;
+		}
+	}
+	return 0;
 }

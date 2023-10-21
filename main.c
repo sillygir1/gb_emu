@@ -36,15 +36,13 @@ int main(int argc, char *argv[]) {
 		close_(system, WINDOW_INITIALIZATION_ERROR);
 	}
 
-	render(system);
+	// render(system);
 
-	// uint8_t ret = 0;
-	// if (system->rom)
-	// 	ret = worker(system);
-	// if (ret)
-	// 	return (ret);
+	uint8_t ret = 0;
+	if (system->rom)
+		ret = worker(system);
 
 	free_system(system);
 	free(system);
-	return (0);
+	return (ret);
 }
