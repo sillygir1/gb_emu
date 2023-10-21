@@ -4254,7 +4254,7 @@ bool test_CPL(System *system, uint8_t test_value, bool print_all) {
 		return 1;
 }
 
-void test_render(System *system, uint16_t address) {
+void test_render_tilemap(System *system, uint16_t address) {
 	uint8_t w = 160 / 8;
 	uint8_t h = 144 / 8;
 
@@ -4262,17 +4262,14 @@ void test_render(System *system, uint16_t address) {
 	    system->graphics->renderer, SDL_PIXELFORMAT_RGBA8888,
 	    SDL_TEXTUREACCESS_STREAMING, 8, 8);
 
-	// uint8_t bytes[16] = {0x3c, 0x7e, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42,
-	// 		     0x7e, 0x5e, 0x7e, 0xa,  0x7c, 0x56, 0x38, 0x7c};
-
-	SDL_Rect dst[h][w];
-
 	for (uint8_t i = 0; i < h; i++) {
 		for (uint8_t j = 0; j < w; j++) {
-			dst[i][j].x = 8 * j * system->settings->pixel_scale;
-			dst[i][j].y = 8 * i * system->settings->pixel_scale;
-			dst[i][j].w = _8px;
-			dst[i][j].h = _8px;
+			system->graphics->tile_rect[i][j].x =
+			    8 * j * system->settings->pixel_scale;
+			system->graphics->tile_rect[i][j].y =
+			    8 * i * system->settings->pixel_scale;
+			system->graphics->tile_rect[i][j].w = _8px;
+			system->graphics->tile_rect[i][j].h = _8px;
 			// printf("%d %d\n", dst[i][j].x, dst[i][j].y);
 		}
 	}
@@ -4280,8 +4277,6 @@ void test_render(System *system, uint16_t address) {
 	unsigned int a = SDL_GetTicks();
 	unsigned int b = SDL_GetTicks();
 	double delta = 0;
-
-	// Rectangle to apply texture to
 
 	// Window display loop
 	bool keep_window_open = true;
@@ -4302,14 +4297,13 @@ void test_render(System *system, uint16_t address) {
 			SDL_RenderClear(system->graphics->renderer);
 			for (uint8_t i = 0; i < h; i++) {
 				for (uint8_t j = 0; j < w; j++) {
-					// if (i * w + j > 256)
-					// 	break;
 					uint16_t addr =
 					    address + 16 * (i * w + j);
 					get_tile(system->memory, texture, addr);
 					SDL_RenderCopy(
 					    system->graphics->renderer, texture,
-					    NULL, &dst[i][j]);
+					    NULL,
+					    &system->graphics->tile_rect[i][j]);
 				}
 			}
 

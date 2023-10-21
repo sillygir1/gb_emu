@@ -22,6 +22,7 @@ typedef struct {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	SDL_Texture *tiles[256];
+	SDL_Rect tile_rect[256 / 8][256 / 8];
 } Graphics;
 
 typedef struct {

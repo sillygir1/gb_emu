@@ -9,7 +9,7 @@
 #include "instructions.h"
 #include "registers.h"
 #include "system.h"
-#include "tests.h"
+// #include "tests.h"
 
 static void parse_args(System *system, int argc, char *argv[]) {
 	if (argc > 1) {
@@ -29,13 +29,6 @@ int main(int argc, char *argv[]) {
 	allocate_system(system);
 	system->settings->pixel_scale = 4;
 
-	// if (argc > 1) {
-	// 	load_rom(system, argv[1]);
-	// } else {
-	// 	printf("No file or something\n");
-	// 	close_(system, FILE_NOT_FOUND);
-	// }
-
 	parse_args(system, argc, argv);
 
 	if (!window_init(system)) {
@@ -43,8 +36,7 @@ int main(int argc, char *argv[]) {
 		close_(system, WINDOW_INITIALIZATION_ERROR);
 	}
 
-	test_render(system, 0x8000);
-	// render(system);
+	render(system);
 
 	// uint8_t ret = 0;
 	// if (system->rom)
