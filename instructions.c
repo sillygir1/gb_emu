@@ -984,150 +984,202 @@ void execute_regular(System *system) {
 	if (system->current_instruction > 0xFF) {
 		// Throw an error
 	}
+
+	uint16_t pc = GET_16BIT_REGISTER(PC);
+	uint16_t sp = GET_16BIT_REGISTER(SP);
+
+	// Taking naive approach
 	switch (system->current_instruction) {
 	case 0x0:
-		// NOP
+		NOP(system);
 		break;
 	case 0x1:
 		// LD BC,d16
+		LD_r16_n16(system, BC, pc + 2);
 		break;
 	case 0x2:
 		// LD (BC),A
+		LD_r16_A(system, BC);
 		break;
 	case 0x3:
 		// INC BC
+		INC_r16(system, BC);
 		break;
 	case 0x4:
 		// INC B
+		INC_r8(system, B);
 		break;
 	case 0x5:
 		// DEC B
+		DEC_r8(system, B);
 		break;
 	case 0x6:
 		// LD B,d8
+		LD_r8_n8(system, B, pc + 1);
 		break;
 	case 0x7:
 		// RLCA
+		RLCA(system);
 		break;
 	case 0x8:
 		// LD (a16),SP
+		// TODO
 		break;
 	case 0x9:
 		// ADD HL,BC
+		ADD_HL_r16(system, BC);
 		break;
 	case 0xa:
 		// LD A,(BC)
+		LD_A_r16(system, BC);
 		break;
 	case 0xb:
 		// DEC BC
+		DEC_r16(system, BC);
 		break;
 	case 0xc:
 		// INC C
+		INC_r8(system, C);
 		break;
 	case 0xd:
 		// DEC C
+		DEC_r8(system, C);
 		break;
 	case 0xe:
 		// LD C,d8
+		LD_r8_n8(system, C, pc + 1);
 		break;
 	case 0xf:
 		// RRCA
+		RRCA(system);
 		break;
 	case 0x10:
 		// STOP 0
+		STOP(system);
 		break;
 	case 0x11:
 		// LD DE,d16
+		// TODO
 		break;
 	case 0x12:
 		// LD (DE),A
+		LD_r16_A(system, DE);
 		break;
 	case 0x13:
 		// INC DE
+		INC_r16(system, DE);
 		break;
 	case 0x14:
 		// INC D
+		INC_r8(system, D);
 		break;
 	case 0x15:
 		// DEC D
+		DEC_r8(system, D);
 		break;
 	case 0x16:
 		// LD D,d8
+		LD_r8_n8(system, D, pc + 1);
 		break;
 	case 0x17:
 		// RLA
+		RLA(system);
 		break;
 	case 0x18:
 		// JR r8
+		JR(system, pc + 1);
 		break;
 	case 0x19:
 		// ADD HL,DE
+		ADD_HL_r16(system, DE);
 		break;
 	case 0x1a:
 		// LD A,(DE)
+		LD_A_r16(system, DE);
 		break;
 	case 0x1b:
 		// DEC DE
+		DEC_r16(system, DE);
 		break;
 	case 0x1c:
 		// INC E
+		INC_r8(system, E);
 		break;
 	case 0x1d:
 		// DEC E
+		DEC_r8(system, E);
 		break;
 	case 0x1e:
 		// LD E,d8
+		LD_r8_n8(system, E, pc + 1);
 		break;
 	case 0x1f:
 		// RRA
+		RRA(system);
 		break;
 	case 0x20:
 		// JR NZ,r8
+		JR_cc_n16(system, NZ, pc + 1);
 		break;
 	case 0x21:
 		// LD HL,d16
+		LD_r16_n16(system, HL, pc + 1);
 		break;
 	case 0x22:
 		// LD (HL+),A
+		LD_HLI_A(system);
 		break;
 	case 0x23:
 		// INC HL
+		INC_r16(system, HL);
 		break;
 	case 0x24:
 		// INC H
+		INC_r8(system, H);
 		break;
 	case 0x25:
 		// DEC H
+		DEC_r8(system, H);
 		break;
 	case 0x26:
 		// LD H,d8
+		LD_r8_n8(system, H, pc + 1);
 		break;
 	case 0x27:
 		// DAA
+		DAA(system);
 		break;
 	case 0x28:
 		// JR Z,r8
+		JR_cc_n16(system, Z, pc + 1);
 		break;
 	case 0x29:
 		// ADD HL,HL
+		ADD_HL_r16(system, HL);
 		break;
 	case 0x2a:
 		// LD A,(HL+)
+		LD_A_HLI(system);
 		break;
 	case 0x2b:
 		// DEC HL
+		DEC_r16(system, HL);
 		break;
 	case 0x2c:
 		// INC L
+		INC_r8(system, L);
 		break;
 	case 0x2d:
 		// DEC L
+		DEC_r8(system, L);
 		break;
 	case 0x2e:
 		// LD L,d8
+		LD_r8_n8(system, L, pc + 1);
 		break;
 	case 0x2f:
 		// CPL
+		CPL(system);
 		break;
 	case 0x30:
 		// JR NC,r8
