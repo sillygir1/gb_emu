@@ -631,9 +631,9 @@ void LD_A_HLD(System *system) {
 
 /* Jumps and Subroutines */
 
-void CALL_n16(System *system, uint16_t n16); // TODO
+void CALL_n16(System *system, uint16_t n16){}; // TODO
 
-void CALL_cc_n16(System *system, uint8_t condition, uint16_t n16); // TODO
+void CALL_cc_n16(System *system, uint8_t condition, uint16_t n16){}; // TODO
 
 void JP_HL(System *system) {
 	uint16_t address = GET_16BIT_REGISTER(HL);
@@ -760,9 +760,9 @@ void RET_cc(System *system, uint8_t condition) {
 	SET_16BIT_REGISTER(PC, pc);
 }
 
-void RETI(System *system); // TODO
+void RETI(System *system){}; // TODO
 
-void RST_vec(System *system); // TODO
+void RST_vec(System *system){}; // TODO
 
 /* Stack operations instructions */
 
@@ -901,17 +901,17 @@ void DAA(System *system) {
 
 void DI(System *system) { system->IME = false; }
 
-void EI(System *system);
+void EI(System *system){};
 
-void HALT(System *system);
+void HALT(System *system){};
 
 void NOP(System *system) {
 	// Literally do nothing but waste a cpu cycle or something
 }
 
-void SCF(System *system);
+void SCF(System *system){};
 
-void STOP(System *system);
+void STOP(System *system){};
 
 void get_instruction_length(System *system) {
 	static uint8_t length[256] = {
