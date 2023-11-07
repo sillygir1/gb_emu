@@ -531,3 +531,11 @@ void get_instruction_length(System *system);
 /// @param instruction instruction
 /// @return duration in system clock ticks
 void get_instruction_duration(System *system);
+
+/// @brief Execute regular instruction
+/// @param system
+void execute_regular(System *system);
+
+/// @brief Execute extended instruction (with 0xCB prefix)
+/// @param system
+void execute_extended(System *system);

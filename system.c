@@ -8,6 +8,7 @@ void allocate_system(System *system) {
 	system->graphics = malloc(sizeof(*system->graphics));
 	memset(system->memory, 0, sizeof(system->memory));
 	memset(system->registers, 0, sizeof(system->registers));
+	SET_16BIT_REGISTER(PC, 0x0100);
 }
 
 void free_system(System *system) {
@@ -71,13 +72,6 @@ void execute_instruction(System *system) {
 		    0xCB00 + system->memory[program_counter + 1];
 	}
 	get_instruction_length(system);
-
-	// DEAL WITH THE 0xCB ONES
-
-	SET_16BIT_REGISTER(PC, program_counter +
-				   system->current_instruction_length);
-
-	// execute the instruction
 
 	SET_16BIT_REGISTER(PC, program_counter +
 				   system->current_instruction_length);
