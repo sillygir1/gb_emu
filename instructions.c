@@ -1087,7 +1087,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x18:
 		// JR r8
-		JR(system, pc + 1);
+		JR_n16(system, pc + 1);
 		break;
 	case 0x19:
 		// ADD HL,DE
