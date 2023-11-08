@@ -989,7 +989,9 @@ void execute_regular(System *system) {
 	uint16_t pc = GET_16BIT_REGISTER(PC);
 	uint16_t sp = GET_16BIT_REGISTER(SP);
 
-	uint16_t n16 = system->memory[pc + 1] + (system->memory[pc + 2] << 8);
+	uint8_t n8 = system->memory[pc + 1];
+	uint8_t e8 = ~(n8 - 1);
+	uint16_t n16 = n8 + (system->memory[pc + 2] << 8);
 
 	// Taking naive approach
 	switch (system->current_instruction) {
@@ -1017,8 +1019,8 @@ void execute_regular(System *system) {
 			DEC_r8(system, B);
 			break;
 		case 0x6:
-			// LD B,d8
-			LD_r8_n8(system, B, system->memory[pc + 1]);
+			// LD B,n8
+			LD_r8_n8(system, B, n8);
 			break;
 		case 0x7:
 			// RLCA
@@ -1049,8 +1051,8 @@ void execute_regular(System *system) {
 			DEC_r8(system, C);
 			break;
 		case 0xe:
-			// LD C,d8
-			LD_r8_n8(system, C, system->memory[pc + 1]);
+			// LD C,n8
+			LD_r8_n8(system, C, n8);
 			break;
 		case 0xf:
 			// RRCA
@@ -1081,16 +1083,16 @@ void execute_regular(System *system) {
 			DEC_r8(system, D);
 			break;
 		case 0x16:
-			// LD D,d8
-			LD_r8_n8(system, D, system->memory[pc + 1]);
+			// LD D,n8
+			LD_r8_n8(system, D, n8);
 			break;
 		case 0x17:
 			// RLA
 			RLA(system);
 			break;
 		case 0x18:
-			// JR r8
-			JR_n16(system, system->memory[pc + 1]);
+			// JR e8
+			JR_n16(system, e8);
 			break;
 		case 0x19:
 			// ADD HL,DE
@@ -1113,16 +1115,16 @@ void execute_regular(System *system) {
 			DEC_r8(system, E);
 			break;
 		case 0x1e:
-			// LD E,d8
-			LD_r8_n8(system, E, system->memory[pc + 1]);
+			// LD E,n8
+			LD_r8_n8(system, E, n8);
 			break;
 		case 0x1f:
 			// RRA
 			RRA(system);
 			break;
 		case 0x20:
-			// JR NZ,r8
-			JR_cc_n16(system, NZ, system->memory[pc + 1]);
+			// JR NZ,e8
+			JR_cc_n16(system, NZ, e8);
 			break;
 		case 0x21:
 			// LD HL,d16
@@ -1145,16 +1147,16 @@ void execute_regular(System *system) {
 			DEC_r8(system, H);
 			break;
 		case 0x26:
-			// LD H,d8
-			LD_r8_n8(system, H, system->memory[pc + 1]);
+			// LD H,n8
+			LD_r8_n8(system, H, n8);
 			break;
 		case 0x27:
 			// DAA
 			DAA(system);
 			break;
 		case 0x28:
-			// JR Z,r8
-			JR_cc_n16(system, Z, system->memory[pc + 1]);
+			// JR Z,e8
+			JR_cc_n16(system, Z, e8);
 			break;
 		case 0x29:
 			// ADD HL,HL
@@ -1177,549 +1179,727 @@ void execute_regular(System *system) {
 			DEC_r8(system, L);
 			break;
 		case 0x2e:
-			// LD L,d8
-			LD_r8_n8(system, L, system->memory[pc + 1]);
+			// LD L,n8
+			LD_r8_n8(system, L, n8);
 			break;
 		case 0x2f:
 			// CPL
 			CPL(system);
 			break;
 		case 0x30:
-			// JR NC,r8
+			// JR NC,e8
+			JR_cc_n16(system, NC, e8);
 			break;
 		case 0x31:
 			// LD SP,d16
+			LD_SP_n16(system, n16);
 			break;
 		case 0x32:
 			// LD (HL-),A
+			LD_HLD_A(system);
 			break;
 		case 0x33:
 			// INC SP
+			INC_SP(system);
 			break;
 		case 0x34:
 			// INC (HL)
+			INC_r16(system, HL);
 			break;
 		case 0x35:
 			// DEC (HL)
+			DEC_HL(system);
 			break;
 		case 0x36:
-			// LD (HL),d8
+			// LD (HL),n8
+			LD_HL_n8(system, n8);
 			break;
 		case 0x37:
 			// SCF
+			SCF(system);
 			break;
 		case 0x38:
-			// JR C,r8
+			// JR C,e8
+			JR_cc_n16(system, Cc, e8);
 			break;
 		case 0x39:
 			// ADD HL,SP
+			ADD_HL_SP(system);
 			break;
 		case 0x3a:
 			// LD A,(HL-)
+			LD_A_HLD(system);
 			break;
 		case 0x3b:
 			// DEC SP
+			DEC_SP(system);
 			break;
 		case 0x3c:
 			// INC A
+			INC_r8(system, A);
 			break;
 		case 0x3d:
 			// DEC A
+			DEC_r8(system, A);
 			break;
 		case 0x3e:
-			// LD A,d8
+			// LD A,n8
+			LD_r8_n8(system, A, n8);
 			break;
 		case 0x3f:
 			// CCF
+			CCF(system);
 			break;
 		case 0x40:
 			// LD B,B
+			LD_r8_r8(system, B, B);
 			break;
 		case 0x41:
 			// LD B,C
+			LD_r8_r8(system, B, C);
 			break;
 		case 0x42:
 			// LD B,D
+			LD_r8_r8(system, B, D);
 			break;
 		case 0x43:
 			// LD B,E
+			LD_r8_r8(system, B, E);
 			break;
 		case 0x44:
 			// LD B,H
+			LD_r8_r8(system, B, H);
 			break;
 		case 0x45:
 			// LD B,L
+			LD_r8_r8(system, B, L);
 			break;
 		case 0x46:
 			// LD B,(HL)
+			LD_r8_HL(system, B);
 			break;
 		case 0x47:
 			// LD B,A
+			LD_r8_r8(system, B, A);
 			break;
 		case 0x48:
 			// LD C,B
+			LD_r8_r8(system, C, B);
 			break;
 		case 0x49:
 			// LD C,C
+			LD_r8_r8(system, C, C);
 			break;
 		case 0x4a:
 			// LD C,D
+			LD_r8_r8(system, C, D);
 			break;
 		case 0x4b:
 			// LD C,E
+			LD_r8_r8(system, C, E);
 			break;
 		case 0x4c:
 			// LD C,H
+			LD_r8_r8(system, C, H);
 			break;
 		case 0x4d:
 			// LD C,L
+			LD_r8_r8(system, C, L);
 			break;
 		case 0x4e:
 			// LD C,(HL)
+			LD_r8_HL(system, C);
 			break;
 		case 0x4f:
 			// LD C,A
+			LD_r8_r8(system, C, A);
 			break;
 		case 0x50:
 			// LD D,B
+			LD_r8_r8(system, D, B);
 			break;
 		case 0x51:
 			// LD D,C
+			LD_r8_r8(system, D, C);
 			break;
 		case 0x52:
 			// LD D,D
+			LD_r8_r8(system, D, D);
 			break;
 		case 0x53:
 			// LD D,E
+			LD_r8_r8(system, D, E);
 			break;
 		case 0x54:
 			// LD D,H
+			LD_r8_r8(system, D, H);
 			break;
 		case 0x55:
 			// LD D,L
+			LD_r8_r8(system, D, L);
 			break;
 		case 0x56:
 			// LD D,(HL)
+			LD_r8_HL(system, D);
 			break;
 		case 0x57:
 			// LD D,A
+			LD_r8_r8(system, D, A);
 			break;
 		case 0x58:
 			// LD E,B
+			LD_r8_r8(system, E, B);
 			break;
 		case 0x59:
 			// LD E,C
+			LD_r8_r8(system, E, C);
 			break;
 		case 0x5a:
 			// LD E,D
+			LD_r8_r8(system, E, D);
 			break;
 		case 0x5b:
 			// LD E,E
+			LD_r8_r8(system, E, E);
 			break;
 		case 0x5c:
 			// LD E,H
+			LD_r8_r8(system, E, H);
 			break;
 		case 0x5d:
 			// LD E,L
+			LD_r8_r8(system, E, L);
 			break;
 		case 0x5e:
 			// LD E,(HL)
+			LD_r8_HL(system, E);
 			break;
 		case 0x5f:
 			// LD E,A
+			LD_r8_r8(system, E, A);
 			break;
 		case 0x60:
 			// LD H,B
+			LD_r8_r8(system, H, B);
 			break;
 		case 0x61:
 			// LD H,C
+			LD_r8_r8(system, H, C);
 			break;
 		case 0x62:
 			// LD H,D
+			LD_r8_r8(system, H, D);
 			break;
 		case 0x63:
 			// LD H,E
+			LD_r8_r8(system, H, E);
 			break;
 		case 0x64:
 			// LD H,H
+			LD_r8_r8(system, H, H);
 			break;
 		case 0x65:
 			// LD H,L
+			LD_r8_r8(system, H, L);
 			break;
 		case 0x66:
 			// LD H,(HL)
+			LD_r8_HL(system, H);
 			break;
 		case 0x67:
 			// LD H,A
+			LD_r8_r8(system, H, A);
 			break;
 		case 0x68:
 			// LD L,B
+			LD_r8_r8(system, L, B);
 			break;
 		case 0x69:
 			// LD L,C
+			LD_r8_r8(system, L, C);
 			break;
 		case 0x6a:
 			// LD L,D
+			LD_r8_r8(system, L, D);
 			break;
 		case 0x6b:
 			// LD L,E
+			LD_r8_r8(system, L, E);
 			break;
 		case 0x6c:
 			// LD L,H
+			LD_r8_r8(system, L, H);
 			break;
 		case 0x6d:
 			// LD L,L
+			LD_r8_r8(system, L, L);
 			break;
 		case 0x6e:
 			// LD L,(HL)
+			LD_r8_HL(system, L);
 			break;
 		case 0x6f:
 			// LD L,A
+			LD_r8_r8(system, L, A);
 			break;
 		case 0x70:
 			// LD (HL),B
+			LD_HL_r8(system, B);
 			break;
 		case 0x71:
 			// LD (HL),C
+			LD_HL_r8(system, C);
 			break;
 		case 0x72:
 			// LD (HL),D
+			LD_HL_r8(system, D);
 			break;
 		case 0x73:
 			// LD (HL),E
+			LD_HL_r8(system, E);
 			break;
 		case 0x74:
 			// LD (HL),H
+			LD_HL_r8(system, H);
 			break;
 		case 0x75:
 			// LD (HL),L
+			LD_HL_r8(system, L);
 			break;
 		case 0x76:
 			// HALT
+			HALT(system);
 			break;
 		case 0x77:
 			// LD (HL),A
+			LD_HL_r8(system, A);
 			break;
 		case 0x78:
 			// LD A,B
+			LD_r8_r8(system, A, B);
 			break;
 		case 0x79:
 			// LD A,C
+			LD_r8_r8(system, A, A);
 			break;
 		case 0x7a:
 			// LD A,D
+			LD_r8_r8(system, A, D);
 			break;
 		case 0x7b:
 			// LD A,E
+			LD_r8_r8(system, A, E);
 			break;
 		case 0x7c:
 			// LD A,H
+			LD_r8_r8(system, A, H);
 			break;
 		case 0x7d:
 			// LD A,L
+			LD_r8_r8(system, A, L);
 			break;
 		case 0x7e:
 			// LD A,(HL)
+			LD_r8_HL(system, A);
 			break;
 		case 0x7f:
 			// LD A,A
+			LD_r8_r8(system, A, A);
 			break;
 		case 0x80:
 			// ADD A,B
+			ADD_A_r8(system, B);
 			break;
 		case 0x81:
 			// ADD A,C
+			ADD_A_r8(system, C);
 			break;
 		case 0x82:
 			// ADD A,D
+			ADD_A_r8(system, D);
 			break;
 		case 0x83:
 			// ADD A,E
+			ADD_A_r8(system, E);
 			break;
 		case 0x84:
 			// ADD A,H
+			ADD_A_r8(system, H);
 			break;
 		case 0x85:
 			// ADD A,L
+			ADD_A_r8(system, L);
 			break;
 		case 0x86:
 			// ADD A,(HL)
+			ADD_A_HL(system);
 			break;
 		case 0x87:
 			// ADD A,A
+			ADD_A_r8(system, A);
 			break;
 		case 0x88:
 			// ADC A,B
+			ADC_A_r8(system, B);
 			break;
 		case 0x89:
 			// ADC A,C
+			ADC_A_r8(system, C);
 			break;
 		case 0x8a:
 			// ADC A,D
+			ADC_A_r8(system, D);
 			break;
 		case 0x8b:
 			// ADC A,E
+			ADC_A_r8(system, E);
 			break;
 		case 0x8c:
 			// ADC A,H
+			ADC_A_r8(system, H);
 			break;
 		case 0x8d:
 			// ADC A,L
+			ADC_A_r8(system, L);
 			break;
 		case 0x8e:
 			// ADC A,(HL)
+			ADC_A_HL(system);
 			break;
 		case 0x8f:
 			// ADC A,A
+			ADC_A_r8(system, A);
 			break;
 		case 0x90:
-			// SUB B
+			// SUB A,B
+			SUB_A_r8(system, B);
 			break;
 		case 0x91:
-			// SUB C
+			// SUB A,C
+			SUB_A_r8(system, C);
 			break;
 		case 0x92:
-			// SUB D
+			// SUB A,D
+			SUB_A_r8(system, D);
 			break;
 		case 0x93:
-			// SUB E
+			// SUB A,E
+			SUB_A_r8(system, E);
 			break;
 		case 0x94:
-			// SUB H
+			// SUB A,H
+			SUB_A_r8(system, H);
 			break;
 		case 0x95:
-			// SUB L
+			// SUB A,L
+			SUB_A_r8(system, L);
 			break;
 		case 0x96:
-			// SUB (HL)
+			// SUB A,(HL)
+			SUB_A_HL(system);
 			break;
 		case 0x97:
-			// SUB A
+			// SUB A,A
+			SUB_A_r8(system, A);
 			break;
 		case 0x98:
 			// SBC A,B
+			SBC_A_r8(system, B);
 			break;
 		case 0x99:
 			// SBC A,C
+			SBC_A_r8(system, C);
 			break;
 		case 0x9a:
 			// SBC A,D
+			SBC_A_r8(system, D);
 			break;
 		case 0x9b:
 			// SBC A,E
+			SBC_A_r8(system, E);
 			break;
 		case 0x9c:
 			// SBC A,H
+			SBC_A_r8(system, H);
 			break;
 		case 0x9d:
 			// SBC A,L
+			SBC_A_r8(system, L);
 			break;
 		case 0x9e:
 			// SBC A,(HL)
+			SBC_A_HL(system);
 			break;
 		case 0x9f:
 			// SBC A,A
+			SBC_A_r8(system, A);
 			break;
 		case 0xa0:
-			// AND B
+			// AND A,B
+			AND_A_r8(system, B);
 			break;
 		case 0xa1:
-			// AND C
+			// AND A,C
+			AND_A_r8(system, C);
 			break;
 		case 0xa2:
-			// AND D
+			// AND A,D
+			AND_A_r8(system, D);
 			break;
 		case 0xa3:
-			// AND E
+			// AND A,E
+			AND_A_r8(system, E);
 			break;
 		case 0xa4:
-			// AND H
+			// AND A,H
+			AND_A_r8(system, H);
 			break;
 		case 0xa5:
-			// AND L
+			// AND A,L
+			AND_A_r8(system, L);
 			break;
 		case 0xa6:
-			// AND (HL)
+			// AND A,(HL)
+			AND_A_HL(system);
 			break;
 		case 0xa7:
-			// AND A
+			// AND A,A
+			AND_A_r8(system, A);
 			break;
 		case 0xa8:
-			// XOR B
+			// XOR A,B
+			XOR_A_r8(system, B);
 			break;
 		case 0xa9:
-			// XOR C
+			// XOR A,C
+			XOR_A_r8(system, C);
 			break;
 		case 0xaa:
-			// XOR D
+			// XOR A,D
+			XOR_A_r8(system, C);
 			break;
 		case 0xab:
-			// XOR E
+			// XOR A,E
+			XOR_A_r8(system, E);
 			break;
 		case 0xac:
-			// XOR H
+			// XOR A,H
+			XOR_A_r8(system, H);
 			break;
 		case 0xad:
-			// XOR L
+			// XOR A,L
+			XOR_A_r8(system, L);
 			break;
 		case 0xae:
-			// XOR (HL)
+			// XOR A,(HL)
+			XOR_A_HL(system);
 			break;
 		case 0xaf:
-			// XOR A
+			// XOR A,A
+			XOR_A_r8(system, A);
 			break;
 		case 0xb0:
-			// OR B
+			// OR A,B
+			OR_A_r8(system, B);
 			break;
 		case 0xb1:
-			// OR C
+			// OR A,C
+			OR_A_r8(system, C);
 			break;
 		case 0xb2:
-			// OR D
+			// OR A,D
+			OR_A_r8(system, D);
 			break;
 		case 0xb3:
-			// OR E
+			// OR A,E
+			OR_A_r8(system, E);
 			break;
 		case 0xb4:
-			// OR H
+			// OR A,H
+			OR_A_r8(system, H);
 			break;
 		case 0xb5:
-			// OR L
+			// OR A,L
+			OR_A_r8(system, L);
 			break;
 		case 0xb6:
-			// OR (HL)
+			// OR A,(HL)
+			OR_A_HL(system);
 			break;
 		case 0xb7:
-			// OR A
+			// OR A,A
+			OR_A_r8(system, A);
 			break;
 		case 0xb8:
-			// CP B
+			// CP A,B
+			CP_A_r8(system, B);
 			break;
 		case 0xb9:
-			// CP C
+			// CP A,C
+			CP_A_r8(system, C);
 			break;
 		case 0xba:
-			// CP D
+			// CP A,D
+			CP_A_r8(system, D);
 			break;
 		case 0xbb:
-			// CP E
+			// CP A,E
+			CP_A_r8(system, E);
 			break;
 		case 0xbc:
-			// CP H
+			// CP A,H
+			CP_A_r8(system, H);
 			break;
 		case 0xbd:
-			// CP L
+			// CP A,L
+			CP_A_r8(system, L);
 			break;
 		case 0xbe:
-			// CP (HL)
+			// CP A,(HL)
+			CP_A_HL(system);
 			break;
 		case 0xbf:
-			// CP A
+			// CP A,A
+			CP_A_r8(system, A);
 			break;
 		case 0xc0:
 			// RET NZ
+			RET_cc(system, NZ);
 			break;
 		case 0xc1:
 			// POP BC
+			POP_r16(system, BC);
 			break;
 		case 0xc2:
 			// JP NZ,a16
+			JP_cc_n16(system, NZ, n16);
 			break;
 		case 0xc3:
 			// JP a16
+			JP_n16(system, n16);
 			break;
 		case 0xc4:
 			// CALL NZ,a16
+			CALL_cc_n16(system, NZ, n16);
 			break;
 		case 0xc5:
-			// PUSH BC6
+			// PUSH BC
+			PUSH_r16(system, BC);
 			break;
 		case 0xc6:
-			// ADD A,d8
+			// ADD A,n8
+			ADD_A_n8(system, n8);
 			break;
 		case 0xc7:
 			// RST 00H
+			// TODO
 			break;
 		case 0xc8:
 			// RET Z
+			RET_cc(system, Z);
 			break;
 		case 0xc9:
 			// RET
+			RET(system);
 			break;
 		case 0xca:
 			// JP Z,a16
+			JP_cc_n16(system, Z, n16);
 			break;
 		case 0xcb:
 			// PREFIX CB
+			// Should not happen here
+			// TODO
+			// Throw an error
 			break;
 		case 0xcc:
 			// CALL Z,a16
+			CALL_cc_n16(system, Z, n16);
 			break;
 		case 0xcd:
 			// CALL a16
+			CALL_n16(system, n16);
 			break;
 		case 0xce:
-			// ADC A,d8
+			// ADC A,n8
+			ADC_A_n8(system, n8);
 			break;
 		case 0xcf:
 			// RST 08H
+			// TODO
 			break;
 		case 0xd0:
 			// RET NC
+			RET_cc(system, NC);
 			break;
 		case 0xd1:
 			// POP DE
+			POP_r16(system, DE);
 			break;
 		case 0xd2:
 			// JP NC,a16
+			JP_cc_n16(system, NC, n16);
 			break;
 		case 0xd3:
 			// No instruction
 			break;
 		case 0xd4:
 			// CALL NC,a16
+			CALL_cc_n16(system, NC, n16);
 			break;
 		case 0xd5:
-			// PUSH DE6
+			// PUSH DE
+			PUSH_r16(system, DE);
 			break;
 		case 0xd6:
-			// SUB d8
+			// SUB A,n8
+			SUB_A_n8(system, n8);
 			break;
 		case 0xd7:
 			// RST 10H
+			// TODO
 			break;
 		case 0xd8:
 			// RET C
+			RET_cc(system, Cc);
 			break;
 		case 0xd9:
-			// RETI6
+			// RETI
+			RETI(system);
 			break;
 		case 0xda:
 			// JP C,a16
+			JP_cc_n16(system, C, n16);
 			break;
 		case 0xdb:
 			// No instruction
 			break;
 		case 0xdc:
 			// CALL C,a16
+			CALL_cc_n16(system, C, n16);
 			break;
 		case 0xdd:
 			// No instruction
 			break;
 		case 0xde:
-			// SBC A,d8
+			// SBC A,n8
+			SBC_A_n8(system, n8);
 			break;
 		case 0xdf:
 			// RST 18H
+			// TODO
 			break;
 		case 0xe0:
 			// LDH (a8),A
+			LDH_n8_A(system, n8);
 			break;
 		case 0xe1:
 			// POP HL
+			POP_r16(system, HL);
 			break;
 		case 0xe2:
 			// LD (C),A
+			LDH_C_A(system);
 			break;
 		case 0xe3:
 			// No instruction
@@ -1728,22 +1908,28 @@ void execute_regular(System *system) {
 			// No instruction
 			break;
 		case 0xe5:
-			// PUSH HL6
+			// PUSH HL
+			PUSH_r16(system, HL);
 			break;
 		case 0xe6:
-			// AND d8
+			// AND A,n8
+			AND_A_n8(system, n8);
 			break;
 		case 0xe7:
 			// RST 20H
+			// TODO
 			break;
 		case 0xe8:
-			// ADD SP,r8
+			// ADD SP,e8
+			ADD_SP_e8(system, e8);
 			break;
 		case 0xe9:
 			// JP (HL)
+			JP_HL(system);
 			break;
 		case 0xea:
 			// LD (a16),A
+			LD_n16_A(system, n16);
 			break;
 		case 0xeb:
 			// No instruction
@@ -1755,46 +1941,59 @@ void execute_regular(System *system) {
 			// No instruction
 			break;
 		case 0xee:
-			// XOR d8
+			// XOR A,n8
+			XOR_A_n8(system, n8);
 			break;
 		case 0xef:
 			// RST 28H
+			// TODO
 			break;
 		case 0xf0:
 			// LDH A,(a8)
+			LDH_A_n8(system, n8);
 			break;
 		case 0xf1:
 			// POP AF
+			POP_r16(system, AF);
 			break;
 		case 0xf2:
 			// LD A,(C)
+			LDH_A_C(system);
 			break;
 		case 0xf3:
 			// DI
+			DI(system);
 			break;
 		case 0xf4:
 			// No instruction
 			break;
 		case 0xf5:
 			// PUSH AF
+			PUSH_r16(system, AF);
 			break;
 		case 0xf6:
-			// OR d8
+			// OR A,n8
+			OR_A_n8(system, n8);
 			break;
 		case 0xf7:
 			// RST 30H
+			// TODO
 			break;
 		case 0xf8:
-			// LD HL,SP+r8
+			// LD HL,SP+e8
+			LD_HL_SP_e8(system, e8);
 			break;
 		case 0xf9:
 			// LD SP,HL
+			LD_SP_HL(system);
 			break;
 		case 0xfa:
 			// LD A,(a16)
+			LD_A_n16(system, n16);
 			break;
 		case 0xfb:
 			// EI
+			EI(system);
 			break;
 		case 0xfc:
 			// No instruction
@@ -1803,12 +2002,13 @@ void execute_regular(System *system) {
 			// No instruction
 			break;
 		case 0xfe:
-			// CP d8
+			// CP A,n8
+			CP_A_n8(system, n8);
 			break;
 		case 0xff:
 			// RST 38H
+			// TODO
 			break;
-
 		default:
 			// Throw an error
 			break;
