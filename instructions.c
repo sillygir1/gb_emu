@@ -988,6 +988,8 @@ void execute_regular(System *system) {
 	uint16_t pc = GET_16BIT_REGISTER(PC);
 	uint16_t sp = GET_16BIT_REGISTER(SP);
 
+	uint16_t n16 = system->memory[pc + 1] + (system->memory[pc + 2] << 8);
+
 	// Taking naive approach
 	switch (system->current_instruction) {
 	case 0x0:
@@ -995,7 +997,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x1:
 		// LD BC,d16
-		LD_r16_n16(system, BC, pc + 2);
+		LD_r16_n16(system, BC, n16);
 		break;
 	case 0x2:
 		// LD (BC),A
@@ -1015,7 +1017,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x6:
 		// LD B,d8
-		LD_r8_n8(system, B, pc + 1);
+		LD_r8_n8(system, B, system->memory[pc + 1]);
 		break;
 	case 0x7:
 		// RLCA
@@ -1023,7 +1025,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x8:
 		// LD (a16),SP
-		// TODO
+		LD_n16_SP(system, n16);
 		break;
 	case 0x9:
 		// ADD HL,BC
@@ -1047,7 +1049,7 @@ void execute_regular(System *system) {
 		break;
 	case 0xe:
 		// LD C,d8
-		LD_r8_n8(system, C, pc + 1);
+		LD_r8_n8(system, C, system->memory[pc + 1]);
 		break;
 	case 0xf:
 		// RRCA
@@ -1059,7 +1061,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x11:
 		// LD DE,d16
-		// TODO
+		LD_r16_n16(system, DE, n16);
 		break;
 	case 0x12:
 		// LD (DE),A
@@ -1079,7 +1081,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x16:
 		// LD D,d8
-		LD_r8_n8(system, D, pc + 1);
+		LD_r8_n8(system, D, system->memory[pc + 1]);
 		break;
 	case 0x17:
 		// RLA
@@ -1087,7 +1089,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x18:
 		// JR r8
-		JR_n16(system, pc + 1);
+		JR_n16(system, system->memory[pc + 1]);
 		break;
 	case 0x19:
 		// ADD HL,DE
@@ -1111,7 +1113,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x1e:
 		// LD E,d8
-		LD_r8_n8(system, E, pc + 1);
+		LD_r8_n8(system, E, system->memory[pc + 1]);
 		break;
 	case 0x1f:
 		// RRA
@@ -1119,11 +1121,11 @@ void execute_regular(System *system) {
 		break;
 	case 0x20:
 		// JR NZ,r8
-		JR_cc_n16(system, NZ, pc + 1);
+		JR_cc_n16(system, NZ, system->memory[pc + 1]);
 		break;
 	case 0x21:
 		// LD HL,d16
-		LD_r16_n16(system, HL, pc + 1);
+		LD_r16_n16(system, HL, n16);
 		break;
 	case 0x22:
 		// LD (HL+),A
@@ -1143,7 +1145,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x26:
 		// LD H,d8
-		LD_r8_n8(system, H, pc + 1);
+		LD_r8_n8(system, H, system->memory[pc + 1]);
 		break;
 	case 0x27:
 		// DAA
@@ -1151,7 +1153,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x28:
 		// JR Z,r8
-		JR_cc_n16(system, Z, pc + 1);
+		JR_cc_n16(system, Z, system->memory[pc + 1]);
 		break;
 	case 0x29:
 		// ADD HL,HL
@@ -1175,7 +1177,7 @@ void execute_regular(System *system) {
 		break;
 	case 0x2e:
 		// LD L,d8
-		LD_r8_n8(system, L, pc + 1);
+		LD_r8_n8(system, L, system->memory[pc + 1]);
 		break;
 	case 0x2f:
 		// CPL
