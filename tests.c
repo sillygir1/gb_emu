@@ -3677,33 +3677,33 @@ bool test_JP_cc_n16(System *system, uint16_t test_value, bool print_all) {
 		SET_16BIT_REGISTER(PC, test_uint16);
 		uint16_t res = test_uint16;
 		switch (i) {
-		case NZ:
-			zero = false;
-			SET_CPU_FLAG(ZERO, zero);
-			if (zero == false)
-				res = test_value;
-			break;
-		case Z:
-			zero = true;
-			SET_CPU_FLAG(ZERO, zero);
-			if (zero == true)
-				res = test_value;
-			break;
-		case NC:
-			carry = false;
-			SET_CPU_FLAG(CARRY, carry);
-			if (carry == false)
-				res = test_value;
-			break;
-		case Cc:
-			carry = true;
-			SET_CPU_FLAG(CARRY, carry);
-			if (carry == true)
-				res = test_value;
-			break;
-		default:
-			printf("WHAT?\n");
-			break;
+			case NZ:
+				zero = false;
+				SET_CPU_FLAG(ZERO, zero);
+				if (zero == false)
+					res = test_value;
+				break;
+			case Z:
+				zero = true;
+				SET_CPU_FLAG(ZERO, zero);
+				if (zero == true)
+					res = test_value;
+				break;
+			case NC:
+				carry = false;
+				SET_CPU_FLAG(CARRY, carry);
+				if (carry == false)
+					res = test_value;
+				break;
+			case Cc:
+				carry = true;
+				SET_CPU_FLAG(CARRY, carry);
+				if (carry == true)
+					res = test_value;
+				break;
+			default:
+				printf("WHAT?\n");
+				break;
 		}
 		JP_cc_n16(system, i, test_value);
 
@@ -3766,33 +3766,33 @@ bool test_JR_cc_n16(System *system, uint16_t test_value, bool print_all) {
 			SET_16BIT_REGISTER(PC, test_uint16);
 			uint16_t res = test_uint16;
 			switch (i) {
-			case NZ:
-				zero = false;
-				SET_CPU_FLAG(ZERO, zero);
-				if (zero == false)
-					res = test_uint16 + j + 2;
-				break;
-			case Z:
-				zero = true;
-				SET_CPU_FLAG(ZERO, zero);
-				if (zero == true)
-					res = test_uint16 + j + 2;
-				break;
-			case NC:
-				carry = false;
-				SET_CPU_FLAG(CARRY, carry);
-				if (carry == false)
-					res = test_uint16 + j + 2;
-				break;
-			case Cc:
-				carry = true;
-				SET_CPU_FLAG(CARRY, carry);
-				if (carry == true)
-					res = test_uint16 + j + 2;
-				break;
-			default:
-				printf("WHAT?\n");
-				break;
+				case NZ:
+					zero = false;
+					SET_CPU_FLAG(ZERO, zero);
+					if (zero == false)
+						res = test_uint16 + j + 2;
+					break;
+				case Z:
+					zero = true;
+					SET_CPU_FLAG(ZERO, zero);
+					if (zero == true)
+						res = test_uint16 + j + 2;
+					break;
+				case NC:
+					carry = false;
+					SET_CPU_FLAG(CARRY, carry);
+					if (carry == false)
+						res = test_uint16 + j + 2;
+					break;
+				case Cc:
+					carry = true;
+					SET_CPU_FLAG(CARRY, carry);
+					if (carry == true)
+						res = test_uint16 + j + 2;
+					break;
+				default:
+					printf("WHAT?\n");
+					break;
 			}
 			JR_cc_n16(system, i, (signed char)j);
 
@@ -3854,33 +3854,33 @@ bool test_RET_cc(System *system, uint16_t test_value, bool print_all) {
 	for (uint8_t i = 0; i < 4; i++) {
 		uint16_t res = test_uint16;
 		switch (i) {
-		case NZ:
-			zero = false;
-			SET_CPU_FLAG(ZERO, zero);
-			if (zero == false)
-				res = test_value;
-			break;
-		case Z:
-			zero = true;
-			SET_CPU_FLAG(ZERO, zero);
-			if (zero == true)
-				res = test_value;
-			break;
-		case NC:
-			carry = false;
-			SET_CPU_FLAG(CARRY, carry);
-			if (carry == false)
-				res = test_value;
-			break;
-		case Cc:
-			carry = true;
-			SET_CPU_FLAG(CARRY, carry);
-			if (carry == true)
-				res = test_value;
-			break;
-		default:
-			printf("WHAT?\n");
-			break;
+			case NZ:
+				zero = false;
+				SET_CPU_FLAG(ZERO, zero);
+				if (zero == false)
+					res = test_value;
+				break;
+			case Z:
+				zero = true;
+				SET_CPU_FLAG(ZERO, zero);
+				if (zero == true)
+					res = test_value;
+				break;
+			case NC:
+				carry = false;
+				SET_CPU_FLAG(CARRY, carry);
+				if (carry == false)
+					res = test_value;
+				break;
+			case Cc:
+				carry = true;
+				SET_CPU_FLAG(CARRY, carry);
+				if (carry == true)
+					res = test_value;
+				break;
+			default:
+				printf("WHAT?\n");
+				break;
 		}
 		system->memory[test_address] = test_value & 0xFF;
 		system->memory[test_address + 1] = (test_value & 0xFF00) >> 8;

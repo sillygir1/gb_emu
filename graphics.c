@@ -86,10 +86,10 @@ int render(System *system) {
 		SDL_Event e;
 		while (SDL_PollEvent(&e) > 0) {
 			switch (e.type) {
-			case SDL_QUIT:
-				keep_window_open = false;
-				return 1;
-				break;
+				case SDL_QUIT:
+					keep_window_open = false;
+					return 1;
+					break;
 			}
 		}
 
