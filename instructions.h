@@ -433,7 +433,7 @@ void RETI(System *system);
 
 /// @brief Call address vec.
 /// @param system
-void RST_vec(System *system);
+void RST_vec(System *system, uint8_t vec);
 
 /* Stack operations instructions */
 

@@ -762,7 +762,16 @@ void RET_cc(System *system, uint8_t condition) {
 
 void RETI(System *system){}; // TODO
 
-void RST_vec(System *system){}; // TODO
+void RST_vec(System *system, uint8_t vec) {
+	uint16_t sp = GET_16BIT_REGISTER(SP);
+	uint16_t pc = GET_16BIT_REGISTER(PC) + 1;
+
+	system->memory[--sp] = system->registers[pc >> 8];
+	system->memory[--sp] = system->registers[pc & 0xFF];
+
+	SET_16BIT_REGISTER(SP, sp);
+	SET_16BIT_REGISTER(PC, vec);
+};
 
 /* Stack operations instructions */
 
