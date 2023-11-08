@@ -677,12 +677,12 @@ void JP_cc_n16(System *system, uint8_t condition, uint16_t n16) {
 }
 
 void JR_n16(System *system, char e8) {
-	uint16_t address = GET_16BIT_REGISTER(PC) + e8 + 2;
+	uint16_t address = GET_16BIT_REGISTER(PC) + e8;
 	SET_16BIT_REGISTER(PC, address);
 }
 
 void JR_cc_n16(System *system, uint8_t condition, signed char e8) {
-	uint16_t address = GET_16BIT_REGISTER(PC) + e8 + 2;
+	uint16_t address = GET_16BIT_REGISTER(PC) + e8;
 	bool taken = false;
 	switch (condition) {
 		case NZ:
@@ -764,7 +764,7 @@ void RETI(System *system){}; // TODO
 
 void RST_vec(System *system, uint8_t vec) {
 	uint16_t sp = GET_16BIT_REGISTER(SP);
-	uint16_t pc = GET_16BIT_REGISTER(PC) + 1;
+	uint16_t pc = GET_16BIT_REGISTER(PC);
 
 	system->memory[--sp] = system->registers[pc >> 8];
 	system->memory[--sp] = system->registers[pc & 0xFF];

@@ -75,6 +75,7 @@ void execute_instruction(System *system) {
 
 	SET_16BIT_REGISTER(PC, program_counter +
 				   system->current_instruction_length);
+	// execute
 }
 
 int worker(System *system) {
