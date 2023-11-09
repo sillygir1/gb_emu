@@ -631,9 +631,37 @@ void LD_A_HLD(System *system) {
 
 /* Jumps and Subroutines */
 
-void CALL_n16(System *system, uint16_t n16){}; // TODO
+void CALL_n16(System *system, uint16_t n16) {
+	uint16_t sp = GET_16BIT_REGISTER(SP);
+	uint16_t pc = GET_16BIT_REGISTER(PC);
 
-void CALL_cc_n16(System *system, uint8_t condition, uint16_t n16){}; // TODO
+	system->memory[--sp] = system->registers[pc >> 8];
+	system->memory[--sp] = system->registers[pc & 0xFF];
+
+	SET_16BIT_REGISTER(SP, sp);
+	SET_16BIT_REGISTER(PC, n16);
+};
+
+void CALL_cc_n16(System *system, uint8_t condition, uint16_t n16) {
+	if ((condition == NZ && GET_CPU_FLAG(ZERO) == true) ||
+	    (condition == Z && GET_CPU_FLAG(ZERO) == false) ||
+	    (condition == NC && GET_CPU_FLAG(CARRY) == true) ||
+	    (condition = Cc && GET_CPU_FLAG(CARRY) == false)) {
+		system->current_instruction_duration = 12;
+		return;
+	}
+
+	system->current_instruction_duration = 24;
+
+	uint16_t sp = GET_16BIT_REGISTER(SP);
+	uint16_t pc = GET_16BIT_REGISTER(PC);
+
+	system->memory[--sp] = system->registers[pc >> 8];
+	system->memory[--sp] = system->registers[pc & 0xFF];
+
+	SET_16BIT_REGISTER(SP, sp);
+	SET_16BIT_REGISTER(PC, n16);
+};
 
 void JP_HL(System *system) {
 	uint16_t address = GET_16BIT_REGISTER(HL);
@@ -643,34 +671,12 @@ void JP_HL(System *system) {
 void JP_n16(System *system, uint16_t n16) { SET_16BIT_REGISTER(PC, n16); }
 
 void JP_cc_n16(System *system, uint8_t condition, uint16_t n16) {
-	switch (condition) {
-		case NZ:
-			if (GET_CPU_FLAG(ZERO) == true) {
-				system->current_instruction_duration = 12;
-				return;
-			}
-			break;
-		case Z:
-			if (GET_CPU_FLAG(ZERO) == false) {
-				system->current_instruction_duration = 12;
-				return;
-			}
-			break;
-		case NC:
-			if (GET_CPU_FLAG(CARRY) == true) {
-				system->current_instruction_duration = 12;
-				return;
-			}
-			break;
-		case Cc:
-			if (GET_CPU_FLAG(CARRY) == false) {
-				system->current_instruction_duration = 12;
-				return;
-			}
-			break;
-		default:
-			// WHY?
-			return;
+	if ((condition == NZ && GET_CPU_FLAG(ZERO) == true) ||
+	    (condition == Z && GET_CPU_FLAG(ZERO) == false) ||
+	    (condition == NC && GET_CPU_FLAG(CARRY) == true) ||
+	    (condition == Cc && GET_CPU_FLAG(CARRY) == false)) {
+		system->current_instruction_duration = 12;
+		return;
 	}
 	system->current_instruction_duration = 16;
 	SET_16BIT_REGISTER(PC, n16);
@@ -684,35 +690,14 @@ void JR_n16(System *system, char e8) {
 void JR_cc_n16(System *system, uint8_t condition, signed char e8) {
 	uint16_t address = GET_16BIT_REGISTER(PC) + e8;
 	bool taken = false;
-	switch (condition) {
-		case NZ:
-			if (GET_CPU_FLAG(ZERO) == false) {
-				SET_16BIT_REGISTER(PC, address);
-				taken = true;
-			}
-			break;
-		case Z:
-			if (GET_CPU_FLAG(ZERO) == true) {
-				SET_16BIT_REGISTER(PC, address);
-				taken = true;
-			}
-			break;
-		case NC:
-			if (GET_CPU_FLAG(CARRY) == false) {
-				SET_16BIT_REGISTER(PC, address);
-				taken = true;
-			}
-			break;
-		case Cc:
-			if (GET_CPU_FLAG(CARRY) == true) {
-				SET_16BIT_REGISTER(PC, address);
-				taken = true;
-			}
-			break;
-		default:
-			// WHY?
-			return;
+	if ((condition == NZ && GET_CPU_FLAG(ZERO) == false) ||
+	    (condition == Z && GET_CPU_FLAG(ZERO) == true) ||
+	    (condition == NC && GET_CPU_FLAG(CARRY) == false) ||
+	    (condition == Cc && GET_CPU_FLAG(CARRY) == true)) {
+		SET_16BIT_REGISTER(PC, address);
+		taken = true;
 	}
+
 	system->current_instruction_duration = taken ? 12 : 8;
 }
 
@@ -724,6 +709,13 @@ void RET(System *system) {
 }
 
 void RET_cc(System *system, uint8_t condition) {
+	if ((condition == NZ && GET_CPU_FLAG(ZERO) == true) ||
+	    (condition == Z && GET_CPU_FLAG(ZERO) == false) ||
+	    (condition == NC && GET_CPU_FLAG(CARRY) == true) ||
+	    (condition == Cc && GET_CPU_FLAG(CARRY) == false)) {
+		system->current_instruction_duration = 8;
+		return;
+	}
 	switch (condition) {
 		case NZ:
 			if (GET_CPU_FLAG(ZERO) == true) {

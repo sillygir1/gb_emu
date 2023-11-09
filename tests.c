@@ -3734,7 +3734,7 @@ bool test_JR_n16(System *system, uint16_t test_value, bool print_all) {
 	for (int i = -128; i <= 127; i++) {
 		SET_16BIT_REGISTER(PC, test_address);
 		JR_n16(system, i);
-		uint16_t res = test_address + i + 2;
+		uint16_t res = test_address + i;
 
 		if (GET_16BIT_REGISTER(PC) == res) {
 			if (print_all)
@@ -3770,25 +3770,25 @@ bool test_JR_cc_n16(System *system, uint16_t test_value, bool print_all) {
 					zero = false;
 					SET_CPU_FLAG(ZERO, zero);
 					if (zero == false)
-						res = test_uint16 + j + 2;
+						res = test_uint16 + j;
 					break;
 				case Z:
 					zero = true;
 					SET_CPU_FLAG(ZERO, zero);
 					if (zero == true)
-						res = test_uint16 + j + 2;
+						res = test_uint16 + j;
 					break;
 				case NC:
 					carry = false;
 					SET_CPU_FLAG(CARRY, carry);
 					if (carry == false)
-						res = test_uint16 + j + 2;
+						res = test_uint16 + j;
 					break;
 				case Cc:
 					carry = true;
 					SET_CPU_FLAG(CARRY, carry);
 					if (carry == true)
-						res = test_uint16 + j + 2;
+						res = test_uint16 + j;
 					break;
 				default:
 					printf("WHAT?\n");
