@@ -996,9 +996,9 @@ void execute_regular(System *system) {
 	uint16_t pc = GET_16BIT_REGISTER(PC);
 	uint16_t sp = GET_16BIT_REGISTER(SP);
 
-	uint8_t n8 = system->memory[pc + 1];
+	uint8_t n8 = system->n8;
 	uint8_t e8 = ~(n8 - 1);
-	uint16_t n16 = n8 + (system->memory[pc + 2] << 8);
+	uint16_t n16 = system->n16;
 
 	// Taking naive approach
 	switch (system->current_instruction) {

@@ -83,6 +83,8 @@ int render(System *system) {
 	// Window display loop
 	bool keep_window_open = true;
 	while (keep_window_open) {
+		uint32_t counter = 0;
+
 		SDL_Event e;
 		while (SDL_PollEvent(&e) > 0) {
 			switch (e.type) {
@@ -96,6 +98,18 @@ int render(System *system) {
 		a = SDL_GetTicks64();
 		delta = a - b;
 		if (delta > 1000 / 60.0) {
+
+			while (counter < 70224) {
+				execute_instruction(system);
+				counter +=
+				    system->current_instruction_duration / 4;
+				if (system->memory[0xFF02] == 0x81)
+					serial(system);
+				// printf("0xC000: %hhu, 0xC001: %hhu\n",
+				//        system->memory[0xC000],
+				//        system->memory[0xC001]);
+			}
+
 			SDL_SetRenderDrawColor(system->graphics->renderer, 255,
 					       255, 255, 255);
 			// TODO

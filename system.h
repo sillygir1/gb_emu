@@ -31,8 +31,11 @@ typedef struct {
 	uint16_t current_instruction;
 	uint8_t current_instruction_length;
 	uint8_t current_instruction_duration;
+	uint8_t n8;
+	uint16_t n16;
 	bool IME;
 	bool interrupt_pending;
+	uint8_t interrupt_counter;
 	FILE *rom;
 	uint32_t rom_size;
 	Graphics *graphics;
@@ -52,3 +55,5 @@ void load_memory_dump(System *system, char path[]);
 void load_rom(System *system, char path[]);
 
 void execute_instruction(System *system);
+
+void serial(System *system);
