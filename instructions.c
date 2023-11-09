@@ -752,7 +752,13 @@ void RET_cc(System *system, uint8_t condition) {
 	SET_16BIT_REGISTER(PC, pc);
 }
 
-void RETI(System *system){}; // TODO
+void RETI(System *system) {
+	system->interrupt_pending = true;
+	uint16_t sp = GET_16BIT_REGISTER(SP);
+	uint16_t pc = system->memory[sp++] + (system->memory[sp++] << 8);
+	SET_16BIT_REGISTER(SP, sp);
+	SET_16BIT_REGISTER(PC, pc);
+};
 
 void RST_vec(System *system, uint8_t vec) {
 	uint16_t sp = GET_16BIT_REGISTER(SP);
@@ -903,17 +909,17 @@ void DAA(System *system) {
 
 void DI(System *system) { system->IME = false; }
 
-void EI(System *system){};
+void EI(System *system) { system->interrupt_pending = true; };
 
-void HALT(System *system){};
+void HALT(System *system){}; // TODO
 
 void NOP(System *system) {
-	// Literally do nothing but waste a cpu cycle or something
+	// Literally do nothing
 }
 
-void SCF(System *system){};
+void SCF(System *system) { SET_CPU_FLAG(CARRY, true); };
 
-void STOP(System *system){};
+void STOP(System *system){}; // TODO
 
 void get_instruction_length(System *system) {
 	static uint8_t length[256] = {
@@ -1793,7 +1799,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xc7:
 			// RST 00H
-			// TODO
+			RST_vec(system, 0);
 			break;
 		case 0xc8:
 			// RET Z
@@ -1827,7 +1833,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xcf:
 			// RST 08H
-			// TODO
+			RST_vec(system, 0x8);
 			break;
 		case 0xd0:
 			// RET NC
@@ -1858,7 +1864,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xd7:
 			// RST 10H
-			// TODO
+			RST_vec(system, 0x10);
 			break;
 		case 0xd8:
 			// RET C
@@ -1888,7 +1894,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xdf:
 			// RST 18H
-			// TODO
+			RST_vec(system, 0x18);
 			break;
 		case 0xe0:
 			// LDH (a8),A
@@ -1918,7 +1924,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xe7:
 			// RST 20H
-			// TODO
+			RST_vec(system, 0x20);
 			break;
 		case 0xe8:
 			// ADD SP,e8
@@ -1947,7 +1953,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xef:
 			// RST 28H
-			// TODO
+			RST_vec(system, 0x28);
 			break;
 		case 0xf0:
 			// LDH A,(a8)
@@ -1978,7 +1984,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xf7:
 			// RST 30H
-			// TODO
+			RST_vec(system, 0x30);
 			break;
 		case 0xf8:
 			// LD HL,SP+e8
@@ -2008,7 +2014,7 @@ void execute_regular(System *system) {
 			break;
 		case 0xff:
 			// RST 38H
-			// TODO
+			RST_vec(system, 0x38);
 			break;
 		default:
 			// Throw an error
