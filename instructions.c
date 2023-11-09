@@ -2026,7 +2026,776 @@ void execute_extended(System *system) {
 	if (system->current_instruction && 0xFF00 != 0xCB00) {
 		// Throw an error
 	}
-	switch (system->current_instruction && 0xFF) {
+	switch (system->current_instruction & 0xFF) {
+		case 0x0:
+			// RLC B
+			break;
+		case 0x1:
+			// RLC C
+			break;
+		case 0x2:
+			// RLC D
+			break;
+		case 0x3:
+			// RLC E
+			break;
+		case 0x4:
+			// RLC H
+			break;
+		case 0x5:
+			// RLC L
+			break;
+		case 0x6:
+			// RLC (HL)
+			break;
+		case 0x7:
+			// RLC A
+			break;
+		case 0x8:
+			// RRC B
+			break;
+		case 0x9:
+			// RRC C
+			break;
+		case 0xa:
+			// RRC D
+			break;
+		case 0xb:
+			// RRC E
+			break;
+		case 0xc:
+			// RRC H
+			break;
+		case 0xd:
+			// RRC L
+			break;
+		case 0xe:
+			// RRC (HL)
+			break;
+		case 0xf:
+			// RRC A
+			break;
+		case 0x10:
+			// RL B
+			break;
+		case 0x11:
+			// RL C
+			break;
+		case 0x12:
+			// RL D
+			break;
+		case 0x13:
+			// RL E
+			break;
+		case 0x14:
+			// RL H
+			break;
+		case 0x15:
+			// RL L
+			break;
+		case 0x16:
+			// RL (HL)
+			break;
+		case 0x17:
+			// RL A
+			break;
+		case 0x18:
+			// RR B
+			break;
+		case 0x19:
+			// RR C
+			break;
+		case 0x1a:
+			// RR D
+			break;
+		case 0x1b:
+			// RR E
+			break;
+		case 0x1c:
+			// RR H
+			break;
+		case 0x1d:
+			// RR L
+			break;
+		case 0x1e:
+			// RR (HL)
+			break;
+		case 0x1f:
+			// RR A
+			break;
+		case 0x20:
+			// SLA B
+			break;
+		case 0x21:
+			// SLA C
+			break;
+		case 0x22:
+			// SLA D
+			break;
+		case 0x23:
+			// SLA E
+			break;
+		case 0x24:
+			// SLA H
+			break;
+		case 0x25:
+			// SLA L
+			break;
+		case 0x26:
+			// SLA (HL)
+			break;
+		case 0x27:
+			// SLA A
+			break;
+		case 0x28:
+			// SRA B
+			break;
+		case 0x29:
+			// SRA C
+			break;
+		case 0x2a:
+			// SRA D
+			break;
+		case 0x2b:
+			// SRA E
+			break;
+		case 0x2c:
+			// SRA H
+			break;
+		case 0x2d:
+			// SRA L
+			break;
+		case 0x2e:
+			// SRA (HL)
+			break;
+		case 0x2f:
+			// SRA A
+			break;
+		case 0x30:
+			// SWAP B
+			break;
+		case 0x31:
+			// SWAP C
+			break;
+		case 0x32:
+			// SWAP D
+			break;
+		case 0x33:
+			// SWAP E
+			break;
+		case 0x34:
+			// SWAP H
+			break;
+		case 0x35:
+			// SWAP L
+			break;
+		case 0x36:
+			// SWAP (HL)
+			break;
+		case 0x37:
+			// SWAP A
+			break;
+		case 0x38:
+			// SRL B
+			break;
+		case 0x39:
+			// SRL C
+			break;
+		case 0x3a:
+			// SRL D
+			break;
+		case 0x3b:
+			// SRL E
+			break;
+		case 0x3c:
+			// SRL H
+			break;
+		case 0x3d:
+			// SRL L
+			break;
+		case 0x3e:
+			// SRL (HL)
+			break;
+		case 0x3f:
+			// SRL A
+			break;
+		case 0x40:
+			// BIT 0,B
+			break;
+		case 0x41:
+			// BIT 0,C
+			break;
+		case 0x42:
+			// BIT 0,D
+			break;
+		case 0x43:
+			// BIT 0,E
+			break;
+		case 0x44:
+			// BIT 0,H
+			break;
+		case 0x45:
+			// BIT 0,L
+			break;
+		case 0x46:
+			// BIT 0,(HL)
+			break;
+		case 0x47:
+			// BIT 0,A
+			break;
+		case 0x48:
+			// BIT 1,B
+			break;
+		case 0x49:
+			// BIT 1,C
+			break;
+		case 0x4a:
+			// BIT 1,D
+			break;
+		case 0x4b:
+			// BIT 1,E
+			break;
+		case 0x4c:
+			// BIT 1,H
+			break;
+		case 0x4d:
+			// BIT 1,L
+			break;
+		case 0x4e:
+			// BIT 1,(HL)
+			break;
+		case 0x4f:
+			// BIT 1,A
+			break;
+		case 0x50:
+			// BIT 2,B
+			break;
+		case 0x51:
+			// BIT 2,C
+			break;
+		case 0x52:
+			// BIT 2,D
+			break;
+		case 0x53:
+			// BIT 2,E
+			break;
+		case 0x54:
+			// BIT 2,H
+			break;
+		case 0x55:
+			// BIT 2,L
+			break;
+		case 0x56:
+			// BIT 2,(HL)
+			break;
+		case 0x57:
+			// BIT 2,A
+			break;
+		case 0x58:
+			// BIT 3,B
+			break;
+		case 0x59:
+			// BIT 3,C
+			break;
+		case 0x5a:
+			// BIT 3,D
+			break;
+		case 0x5b:
+			// BIT 3,E
+			break;
+		case 0x5c:
+			// BIT 3,H
+			break;
+		case 0x5d:
+			// BIT 3,L
+			break;
+		case 0x5e:
+			// BIT 3,(HL)
+			break;
+		case 0x5f:
+			// BIT 3,A
+			break;
+		case 0x60:
+			// BIT 4,B
+			break;
+		case 0x61:
+			// BIT 4,C
+			break;
+		case 0x62:
+			// BIT 4,D
+			break;
+		case 0x63:
+			// BIT 4,E
+			break;
+		case 0x64:
+			// BIT 4,H
+			break;
+		case 0x65:
+			// BIT 4,L
+			break;
+		case 0x66:
+			// BIT 4,(HL)
+			break;
+		case 0x67:
+			// BIT 4,A
+			break;
+		case 0x68:
+			// BIT 5,B
+			break;
+		case 0x69:
+			// BIT 5,C
+			break;
+		case 0x6a:
+			// BIT 5,D
+			break;
+		case 0x6b:
+			// BIT 5,E
+			break;
+		case 0x6c:
+			// BIT 5,H
+			break;
+		case 0x6d:
+			// BIT 5,L
+			break;
+		case 0x6e:
+			// BIT 5,(HL)
+			break;
+		case 0x6f:
+			// BIT 5,A
+			break;
+		case 0x70:
+			// BIT 6,B
+			break;
+		case 0x71:
+			// BIT 6,C
+			break;
+		case 0x72:
+			// BIT 6,D
+			break;
+		case 0x73:
+			// BIT 6,E
+			break;
+		case 0x74:
+			// BIT 6,H
+			break;
+		case 0x75:
+			// BIT 6,L
+			break;
+		case 0x76:
+			// BIT 6,(HL)
+			break;
+		case 0x77:
+			// BIT 6,A
+			break;
+		case 0x78:
+			// BIT 7,B
+			break;
+		case 0x79:
+			// BIT 7,C
+			break;
+		case 0x7a:
+			// BIT 7,D
+			break;
+		case 0x7b:
+			// BIT 7,E
+			break;
+		case 0x7c:
+			// BIT 7,H
+			break;
+		case 0x7d:
+			// BIT 7,L
+			break;
+		case 0x7e:
+			// BIT 7,(HL)
+			break;
+		case 0x7f:
+			// BIT 7,A
+			break;
+		case 0x80:
+			// RES 0,B
+			break;
+		case 0x81:
+			// RES 0,C
+			break;
+		case 0x82:
+			// RES 0,D
+			break;
+		case 0x83:
+			// RES 0,E
+			break;
+		case 0x84:
+			// RES 0,H
+			break;
+		case 0x85:
+			// RES 0,L
+			break;
+		case 0x86:
+			// RES 0,(HL)
+			break;
+		case 0x87:
+			// RES 0,A
+			break;
+		case 0x88:
+			// RES 1,B
+			break;
+		case 0x89:
+			// RES 1,C
+			break;
+		case 0x8a:
+			// RES 1,D
+			break;
+		case 0x8b:
+			// RES 1,E
+			break;
+		case 0x8c:
+			// RES 1,H
+			break;
+		case 0x8d:
+			// RES 1,L
+			break;
+		case 0x8e:
+			// RES 1,(HL)
+			break;
+		case 0x8f:
+			// RES 1,A
+			break;
+		case 0x90:
+			// RES 2,B
+			break;
+		case 0x91:
+			// RES 2,C
+			break;
+		case 0x92:
+			// RES 2,D
+			break;
+		case 0x93:
+			// RES 2,E
+			break;
+		case 0x94:
+			// RES 2,H
+			break;
+		case 0x95:
+			// RES 2,L
+			break;
+		case 0x96:
+			// RES 2,(HL)
+			break;
+		case 0x97:
+			// RES 2,A
+			break;
+		case 0x98:
+			// RES 3,B
+			break;
+		case 0x99:
+			// RES 3,C
+			break;
+		case 0x9a:
+			// RES 3,D
+			break;
+		case 0x9b:
+			// RES 3,E
+			break;
+		case 0x9c:
+			// RES 3,H
+			break;
+		case 0x9d:
+			// RES 3,L
+			break;
+		case 0x9e:
+			// RES 3,(HL)
+			break;
+		case 0x9f:
+			// RES 3,A
+			break;
+		case 0xa0:
+			// RES 4,B
+			break;
+		case 0xa1:
+			// RES 4,C
+			break;
+		case 0xa2:
+			// RES 4,D
+			break;
+		case 0xa3:
+			// RES 4,E
+			break;
+		case 0xa4:
+			// RES 4,H
+			break;
+		case 0xa5:
+			// RES 4,L
+			break;
+		case 0xa6:
+			// RES 4,(HL)
+			break;
+		case 0xa7:
+			// RES 4,A
+			break;
+		case 0xa8:
+			// RES 5,B
+			break;
+		case 0xa9:
+			// RES 5,C
+			break;
+		case 0xaa:
+			// RES 5,D
+			break;
+		case 0xab:
+			// RES 5,E
+			break;
+		case 0xac:
+			// RES 5,H
+			break;
+		case 0xad:
+			// RES 5,L
+			break;
+		case 0xae:
+			// RES 5,(HL)
+			break;
+		case 0xaf:
+			// RES 5,A
+			break;
+		case 0xb0:
+			// RES 6,B
+			break;
+		case 0xb1:
+			// RES 6,C
+			break;
+		case 0xb2:
+			// RES 6,D
+			break;
+		case 0xb3:
+			// RES 6,E
+			break;
+		case 0xb4:
+			// RES 6,H
+			break;
+		case 0xb5:
+			// RES 6,L
+			break;
+		case 0xb6:
+			// RES 6,(HL)
+			break;
+		case 0xb7:
+			// RES 6,A
+			break;
+		case 0xb8:
+			// RES 7,B
+			break;
+		case 0xb9:
+			// RES 7,C
+			break;
+		case 0xba:
+			// RES 7,D
+			break;
+		case 0xbb:
+			// RES 7,E
+			break;
+		case 0xbc:
+			// RES 7,H
+			break;
+		case 0xbd:
+			// RES 7,L
+			break;
+		case 0xbe:
+			// RES 7,(HL)
+			break;
+		case 0xbf:
+			// RES 7,A
+			break;
+		case 0xc0:
+			// SET 0,B
+			break;
+		case 0xc1:
+			// SET 0,C
+			break;
+		case 0xc2:
+			// SET 0,D
+			break;
+		case 0xc3:
+			// SET 0,E
+			break;
+		case 0xc4:
+			// SET 0,H
+			break;
+		case 0xc5:
+			// SET 0,L
+			break;
+		case 0xc6:
+			// SET 0,(HL)
+			break;
+		case 0xc7:
+			// SET 0,A
+			break;
+		case 0xc8:
+			// SET 1,B
+			break;
+		case 0xc9:
+			// SET 1,C
+			break;
+		case 0xca:
+			// SET 1,D
+			break;
+		case 0xcb:
+			// SET 1,E
+			break;
+		case 0xcc:
+			// SET 1,H
+			break;
+		case 0xcd:
+			// SET 1,L
+			break;
+		case 0xce:
+			// SET 1,(HL)
+			break;
+		case 0xcf:
+			// SET 1,A
+			break;
+		case 0xd0:
+			// SET 2,B
+			break;
+		case 0xd1:
+			// SET 2,C
+			break;
+		case 0xd2:
+			// SET 2,D
+			break;
+		case 0xd3:
+			// SET 2,E
+			break;
+		case 0xd4:
+			// SET 2,H
+			break;
+		case 0xd5:
+			// SET 2,L
+			break;
+		case 0xd6:
+			// SET 2,(HL)
+			break;
+		case 0xd7:
+			// SET 2,A
+			break;
+		case 0xd8:
+			// SET 3,B
+			break;
+		case 0xd9:
+			// SET 3,C
+			break;
+		case 0xda:
+			// SET 3,D
+			break;
+		case 0xdb:
+			// SET 3,E
+			break;
+		case 0xdc:
+			// SET 3,H
+			break;
+		case 0xdd:
+			// SET 3,L
+			break;
+		case 0xde:
+			// SET 3,(HL)
+			break;
+		case 0xdf:
+			// SET 3,A
+			break;
+		case 0xe0:
+			// SET 4,B
+			break;
+		case 0xe1:
+			// SET 4,C
+			break;
+		case 0xe2:
+			// SET 4,D
+			break;
+		case 0xe3:
+			// SET 4,E
+			break;
+		case 0xe4:
+			// SET 4,H
+			break;
+		case 0xe5:
+			// SET 4,L
+			break;
+		case 0xe6:
+			// SET 4,(HL)
+			break;
+		case 0xe7:
+			// SET 4,A
+			break;
+		case 0xe8:
+			// SET 5,B
+			break;
+		case 0xe9:
+			// SET 5,C
+			break;
+		case 0xea:
+			// SET 5,D
+			break;
+		case 0xeb:
+			// SET 5,E
+			break;
+		case 0xec:
+			// SET 5,H
+			break;
+		case 0xed:
+			// SET 5,L
+			break;
+		case 0xee:
+			// SET 5,(HL)
+			break;
+		case 0xef:
+			// SET 5,A
+			break;
+		case 0xf0:
+			// SET 6,B
+			break;
+		case 0xf1:
+			// SET 6,C
+			break;
+		case 0xf2:
+			// SET 6,D
+			break;
+		case 0xf3:
+			// SET 6,E
+			break;
+		case 0xf4:
+			// SET 6,H
+			break;
+		case 0xf5:
+			// SET 6,L
+			break;
+		case 0xf6:
+			// SET 6,(HL)
+			break;
+		case 0xf7:
+			// SET 6,A
+			break;
+		case 0xf8:
+			// SET 7,B
+			break;
+		case 0xf9:
+			// SET 7,C
+			break;
+		case 0xfa:
+			// SET 7,D
+			break;
+		case 0xfb:
+			// SET 7,E
+			break;
+		case 0xfc:
+			// SET 7,H
+			break;
+		case 0xfd:
+			// SET 7,L
+			break;
+		case 0xfe:
+			// SET 7,(HL)
+			break;
+		case 0xff:
+			// SET 7,A
+			break;
+
 		default:
 			// Throw an error
 			break;
