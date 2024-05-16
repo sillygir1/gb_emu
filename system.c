@@ -43,7 +43,7 @@ void load_memory_dump(System *system, char path[]) {
 	for (int i = 0; i < length; i++) {
 		fread(system->memory + i, 1, 1, system->rom);
 	}
-	system->rom_size = 32768;
+	// system->rom_size = 32768;
 }
 
 void load_rom(System *system, char path[]) {
@@ -56,7 +56,7 @@ void load_rom(System *system, char path[]) {
 	if (system->rom)
 		fseek(system->rom, 0L, SEEK_END);
 	long int length = ftell(system->rom);
-	if (length != 32768) {
+	if (length > 32768) {
 		printf("I don't know what to do yet\n");
 		close_(system, FILE_SIZE_WEIRD);
 	}
@@ -114,7 +114,7 @@ int worker(System *system) {
 		printf("No file or something\n");
 		return FILE_NOT_FOUND;
 	}
-	if (system->rom_size != 32768) { // Temporary, have to deal with later
+	if (system->rom_size > 32768) { // Temporary, have to deal with later
 		printf("Rom size is %d\n", system->rom_size);
 		return FILE_SIZE_WEIRD;
 	}

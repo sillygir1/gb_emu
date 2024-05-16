@@ -911,7 +911,7 @@ void DI(System *system) { system->IME = false; }
 
 void EI(System *system) { system->interrupt_pending = true; };
 
-void HALT(System *system){}; // TODO
+void HALT(System *system){/*TODO*/};
 
 void NOP(System *system) {
 	// Literally do nothing
@@ -919,7 +919,7 @@ void NOP(System *system) {
 
 void SCF(System *system) { SET_CPU_FLAG(CARRY, true); };
 
-void STOP(System *system){}; // TODO
+void STOP(System *system){/*TODO*/};
 
 void get_instruction_length(System *system) {
 	static uint8_t length[256] = {
