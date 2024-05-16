@@ -9,6 +9,9 @@
 #include "registers.h"
 #include "system.h"
 
+/* 	Note: tests for arithmetic instructions are flawed
+		and should be rewritten. */
+
 /* Batch tests */
 
 bool test_all(System *system, bool print_all);

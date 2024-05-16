@@ -1,5 +1,8 @@
 #include "tests.h"
 
+/* 	Note: tests for arithmetic instructions are flawed
+		and should be rewritten. */
+
 /* Batch tests */
 
 static uint16_t test_address = 0xFF00;
@@ -1004,7 +1007,7 @@ bool test_DEC_r8(System *system, bool print_all) {
 		DEC_r8(system, test_r8_1);
 		uint8_t res = i - 1;
 		zero = res == 0;
-		halfcarry = ((res)&0xF == 0b1111);
+		halfcarry = ((res) & 0xF == 0b1111);
 		sub = true;
 		if ((uint8_t)system->registers[test_r8_1] == (uint8_t)res &&
 		    carry == GET_CPU_FLAG(CARRY) &&
@@ -1050,7 +1053,7 @@ bool test_DEC_HL(System *system, bool print_all) {
 		DEC_HL(system);
 		uint8_t res = i - 1;
 		zero = res == 0;
-		halfcarry = ((res)&0xF == 0b1111);
+		halfcarry = ((res) & 0xF == 0b1111);
 		sub = true;
 		if ((uint8_t)system->memory[test_address] == (uint8_t)res &&
 		    carry == GET_CPU_FLAG(CARRY) &&
